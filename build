@@ -1,0 +1,18 @@
+declare -r image="${1:-edwardost/qlik-data-movement-gateway}"
+
+if ! [ -f qlik-data-gateway-data-movement.rpm ]; then
+  echo "Downloading qlik-data-gateway-data-movement.rpm ..."
+  ./download_gateway.sh
+  echo "Finished."
+fi
+qlik_data_movement_gateway_version=$(rpm -q --queryformat='%{VERSION}.%{RELEASE}' qlik-data-gateway-data-movement.rpm 2>/dev/null)
+echo "Qlik Data Movement Gateway Version: ${qlik_data_movement_gateway_version}"
+
+declare -r tag="${2:-${qlik_data_movement_gateway_version}}"
+shift 2
+
+docker build -t "${image}:${tag}"  \
+  --build-arg base_image=edwardost/ubuntu \
+  --build-arg base_tag=22.04 \
+  --build-arg qlik_data_movement_gateway_rpm_version=2023.11.4 \
+  "${@}" .

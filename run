@@ -1,0 +1,6 @@
+declare -r image="${1:-edwardost/qlik-data-movement-gateway}"
+declare -r tag="${2:-2023.11.4}"
+declare -r container="${3:-qlik-data-movement-gateway}"
+shift 3
+
+docker run --name ${container} -it "${image}:${tag}" "${@}"
