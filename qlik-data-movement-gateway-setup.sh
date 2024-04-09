@@ -3,13 +3,13 @@
 qlik_data_movement_gateway_script_path=$(readlink -e "${BASH_SOURCE[0]}")
 qlik_data_movement_gateway_script_dir="${qlik_data_movement_gateway_script_path%/*}"
 
-# shellcheck source=qlik_data_movement_gateway.sh
-source "${qlik_data_movement_gateway_script_dir}/qlik_data_movement_gateway.sh"
+# shellcheck source=qlik-data-movement-gateway-config.sh
+source "${qlik_data_movement_gateway_script_dir}/qlik-data-movement-gateway-config.sh"
 
 
 qlik_data_movement_gateway_setup() {
 
-  docker pull qlik_data_movement_gateway/cloudbeaver:"${qlik_data_movement_gateway_version}"
+  docker pull "${qlik_data_movement_gateway_image}/${qlik_data_movement_gateway_tag}"
 
   docker volume create "${qlik_data_movement_gateway_volume}"
 
@@ -24,13 +24,20 @@ qlik_data_movement_gateway_setup() {
   fi
 
   if [ $# -gt 0 ]; then
+    local result=0
     case $1 in
-      setup | server)
+      config | download | build | server)
         set -- qlik_data_movement_gateway_"$1" "${@:2}"
+        "$@"
+        result=$?
       ;;
+      *)
+        echo "unknown subcommand(s):" "${@}"
+        result=1
     esac
+    return ${result}
+  else
+    return 0
   fi
-
-  "$@"
 
 }

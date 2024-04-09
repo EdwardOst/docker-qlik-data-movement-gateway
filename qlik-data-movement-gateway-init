@@ -3,11 +3,17 @@
 qlik_data_movement_gateway_script_path=$(readlink -e "${BASH_SOURCE[0]}")
 qlik_data_movement_gateway_script_dir="${qlik_data_movement_gateway_script_path%/*}"
 
-# shellcheck source=qlik_data_movement_gateway.sh
-source "${qlik_data_movement_gateway_script_dir}/qlik_data_movement_gateway.sh"
+# shellcheck source=qlik-data-movement-gateway-config.sh
+source "${qlik_data_movement_gateway_script_dir}/qlik-data-movement-gateway-config.sh"
 
-# shellcheck source=qlik_data_movement_gateway_setup.sh
-source "${qlik_data_movement_gateway_script_dir}/qlik_data_movement_gateway_setup.sh"
+# shellcheck source=qlik-data-movement-gateway-download.sh
+source "${qlik_data_movement_gateway_script_dir}/qlik-data-movement-gateway-download.sh"
 
-# shellcheck source=qlik_data_movement_gateway_server.sh
-source "${qlik_data_movement_gateway_script_dir}/qlik_data_movement_gateway_server.sh"
+# shellcheck source=qlik-data-movement-gateway-build.sh
+source "${qlik_data_movement_gateway_script_dir}/qlik-data-movement-gateway-build.sh"
+
+# shellcheck source=qlik-data-movement-gateway-setup.sh
+source "${qlik_data_movement_gateway_script_dir}/qlik-data-movement-gateway-setup.sh"
+
+# shellcheck source=qlik-data-movement-gateway-server.sh
+source "${qlik_data_movement_gateway_script_dir}/qlik-data-movement-gateway-server.sh"

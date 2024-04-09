@@ -3,35 +3,34 @@
 qlik_data_movement_gateway_script_path=$(readlink -e "${BASH_SOURCE[0]}")
 qlik_data_movement_gateway_script_dir="${qlik_data_movement_gateway_script_path%/*}"
 
-# shellcheck source=qlik_data_movement_gateway.sh
-source "${qlik_data_movement_gateway_script_dir}/qlik_data_movement_gateway.sh"
+# shellcheck source=qlik-data-movement-gateway-config.sh
+source "${qlik_data_movement_gateway_script_dir}/qlik-data-movement-gateway-config.sh"
 
 
 qlik_data_movement_gateway_server() {
 
-  # run qlik_data_movement_gateway as a temporary container in a terminal mapping port QLIK_DATA_MOVEMENT_GATEWAY_CONTAINER_PORT
-  # to a host port QLIK_DATA_MOVEMENT_GATEWAY_HOST_PORT
-
-  # docker run --name ${QLIK_DATA_MOVEMENT_GATEWAY_CONTAINER_NAME} --rm -it --network=${QLIK_DATA_MOVEMENT_GATEWAY_NETWORK}
-  #   -p ${QLIK_DATA_MOVEMENT_GATEWAY_HOST_PORT}:${QLIK_DATA_MOVEMENT_GATEWAY__CONTAINER_PORT}
-  #   -v ${QLIK_DATA_MOVEMENT_GATEWAY_VOLUME}:/opt/qlik_data_movement_gateway
-  #   edwardost/qlik_data_movement_gateway:${QLIK_DATA_MOVEMENT_GATEWAY_VERSION}
-
   # run in daemon mode and keep the container rather than removing it
- docker run --name "${qlik_data_movement_gateway_container_name}" \
-    ${qlik_data_movement_gateway_host_port:+ -p "${qlik_data_movement_gateway_host_port}":"${qlik_data_movement_gateway_container_port}"} \
+  docker run --name "${qlik_data_movement_gateway_container_name}" \
     -v "${qlik_data_movement_gateway_volume}":/opt/qlik_data_movement_gateway \
     ${qlik_data_movement_gateway_network:+ --network="${qlik_data_movement_gateway_network}"} \
     -d --restart unless-stopped \
-    edwardost/qlik_data_movement_gateway:"${qlik_data_movement_gateway_version}"
+    "${qlik_data_movement_gateway_image}:${qlik_data_movement_gateway_tag}"
 
   if [ $# -gt 0 ]; then
+    local result=0
     case $1 in
-      setup | server)
+      config | download | build | setup)
         set -- qlik_data_movement_gateway_"$1" "${@:2}"
+        "$@"
+        result=$?
       ;;
+      *)
+        echo "unknown subcommand(s):" "${@}"
+        result=1
     esac
+    return ${result}
+  else
+    return 0
   fi
 
-  "$@"
 }
