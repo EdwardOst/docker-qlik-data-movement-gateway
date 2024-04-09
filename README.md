@@ -11,10 +11,9 @@ Source the `qlik-data-movement-gateway-init` script and the commands below will 
                                            It must be used to chain subsequent commands.
 
   **qlik_data_movement_gateway_download**  Downloads the latest qlik data movement gateway image from a repo.
-                                           This command requires a parameter and as such cannot be chained
-                                           to susbsequent commands
                                            Currently uses personal github repo with git lfs.
                                            Should eventually point to a qlik repo.
+                                           Takes a single required argument --token=<github token>
 
   **qlik_data_movement_gateway_build**     Create a qlik data movement gateway image.
 

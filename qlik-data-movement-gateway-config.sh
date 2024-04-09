@@ -20,6 +20,9 @@ qlik_data_movement_gateway_config() {
 
   # IMAGE CONFIGURATION
 
+  local -r qlik_data_movement_gateway_version=$(rpm -q --queryformat='%{VERSION}.%{RELEASE}' qlik-data-gateway-data-movement.rpm 2>/dev/null)
+  # echo "Qlik Data Movement Gateway Version: ${qlik_data_movement_gateway_version}"
+
   # image and tag of the gateway image
   local -r qlik_data_movement_gateway_image="${qlik_data_movement_gateway_image:-edwardost/qlik-data-movement-gateway}"
   local -r qlik_data_movement_gateway_tag="${qlik_data_movement_gateway_tag:-${qlik_data_movement_gateway_version}}"
