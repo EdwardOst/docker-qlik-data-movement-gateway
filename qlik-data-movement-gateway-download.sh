@@ -25,4 +25,20 @@ qlik_data_movement_gateway_download() {
   # this will set the qlik_data_movement_gateway_version set in the outer scope of the qlik_data_movement_gateway_config
   #qlik_data_movement_gateway_version=$(rpm -q --queryformat='%{VERSION}.%{RELEASE}' qlik-data-gateway-data-movement.rpm 2>/dev/null)
 
+  if [ $# -gt 0 ]; then
+    local result=0
+    case $1 in
+      config | build | setup | server)
+        set -- qlik_data_movement_gateway_"$1" "${@:2}"
+        "$@"
+        result=$?
+      ;;
+      *)
+        echo "unknown subcommand(s):" "${@}"                                                                                                                                       result=1
+    esac
+    return ${result}
+  else
+    return 0
+  fi
+
 }
