@@ -1,0 +1,31 @@
+# syntax=docker/dockerfile:1
+ARG base_image=edwardost/ubuntu
+ARG base_tag=22.04
+
+FROM ${base_image}:${base_tag}
+
+ARG qlik_tenant=obd
+ARG qlik_package=qlik-data-gateway-data-movement_2023.11-5_amd64.deb
+ARG qlik_package_version=2023.11-5
+ARG qlik_package_platform=amd64
+
+LABEL maintainer="eost@talend.com"
+LABEL qlik_package_version="${qlik_package_version}"
+LABEL qlik_tenant="${qlik_tenant}"
+
+  ADD --chown=qlik:qlik ${qlik_package} gateway/
+
+  RUN sudo mkdir -p /opt/qlik \
+    && sudo chown qlik:qlik /opt/qlik \
+    && cd gateway \
+    && package_filename=${qlik_package} \
+    && package_ext=${package_filename##*\.} \
+    && ln -s ${qlik_package} qlik-data-movement-gateway-data-movement.${package_ext}
+
+  RUN sudo QLIK_CUSTOMER_AGREEMENT_ACCEPT=yes dpkg -iv ~/gateway/qlik-data-movement-gateway-data-movement.deb \
+
+
+#    && cd /opt/qlik/gateway/movement/bin \
+#    && ./agentctl qcs set_config --tenant_url ${qlik_tenant}.us.qlikcloud.com
+
+#  RUN sudo systemctl start repagent

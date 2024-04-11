@@ -8,18 +8,21 @@ source "${qlik_data_movement_gateway_script_dir}/qlik-data-movement-gateway-conf
 
 function qlik_data_movement_gateway_build() {
 
-  if ! [ -f qlik-data-gateway-data-movement.rpm ]; then
-    echo "Error: qlik-data-gateway-data-movement.rpm not found.  Use qlik_data_movement_gateway_download to download the rpm."
+  if ! [ -f "${qlik_data_movement_gateway_package}" ]; then
+    echo "Error: qlik data movement gateway package '${qlik_data_movement_gateway_package}' not found.  Use qlik_data_movement_gateway_download to get the package."
     return 1
   fi
 
-  local -r qlik_data_movement_gateway_version=$(rpm -q --queryformat='%{VERSION}.%{RELEASE}' qlik-data-gateway-data-movement.rpm 2>/dev/null)
-  # echo "Qlik Data Movement Gateway Version: ${qlik_data_movement_gateway_version}"
+#  local -r qlik_data_movement_gateway_version=$(rpm -q --queryformat='%{VERSION}.%{RELEASE}' qlik-data-gateway-data-movement.rpm 2>/dev/null)
+#  echo "Qlik Data Movement Gateway Version: ${qlik_data_movement_gateway_version}"
 
   docker build -t "${qlik_data_movement_gateway_image}:${qlik_data_movement_gateway_tag}"  \
     --build-arg base_image="${qlik_data_movement_gateway_base_image}" \
     --build-arg base_tag="${qlik_data_movement_gateway_base_tag}" \
-    --build-arg qlik_data_movement_gateway_rpm_version="${qlik_data_movement_gateway_version}" \
+    --build-arg qlik_package="${qlik_data_movement_gateway_package}" \
+    --build-arg qlik_package_version="${qlik_data_movement_gateway_package_version}" \
+    --build-arg qlik_package_platform="${qlik_data_movement_gateway_package_platform}" \
+    --build-arg qlik_tenant="${qlik_tenant}" \
     "${@}" .
 
   declare -r build_status=$?

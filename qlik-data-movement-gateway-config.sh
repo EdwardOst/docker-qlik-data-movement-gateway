@@ -16,20 +16,36 @@ qlik_data_movement_gateway_config() {
   # the default download function downloads from github
   local -r qlik_data_movement_gateway_organization="${qlik_data_movement_gateway_organization:-EdwardOst}"
   local -r qlik_data_movement_gateway_repo="${qlik_data_movement_gateway_repo:-qlik-releases}"
-  local -r qlik_data_movement_gateway_file="${qlik_data_movement_gateway_file:-qlik-data-gateway-data-movement.rpm}"
+
+  # debian package for ubuntu
+#  local -r qlik_data_movement_gateway_package_deb_version="2023.11-5"
+#  local -r qlik_data_movement_gateway_package_deb_platform="amd64"
+#  local -r qlik_data_movement_gateway_package_deb="${qlik_data_movement_gateway_package_deb:-qlik-data-gateway-data-movement_${qlik_data_movement_gateway_package_deb_version}_${qlik_data_movement_gateway_package_deb_platform}.deb}"
+
+  # rpm package for redhat
+  local -r qlik_data_movement_gateway_package_rpm_version="2023.11-4"
+  local -r qlik_data_movement_gateway_package_rpm_platform="x86_64"
+  local -r qlik_data_movement_gateway_package_rpm="${qlik_data_movement_gateway_package_rpm:-qlik-data-gateway-data-movement_${qlik_data_movement_gateway_package_rpm_version}_${qlik_data_movement_gateway_package_rpm_platform}.rpm}"
+
+  local -r qlik_data_movement_gateway_package_version="${qlik_data_movement_gateway_package_rpm_version}"
+  local -r qlik_data_movement_gateway_package_platform="${qlik_data_movement_gateway_package_rpm_platform}"
+  local -r qlik_data_movement_gateway_package="${qlik_data_movement_gateway_package_rpm}"
+
+#  local -r qlik_data_movement_gateway_version=$(rpm -q --queryformat='%{VERSION}.%{RELEASE}' qlik-data-gateway-data-movement.rpm 2>/dev/null)
 
   # IMAGE CONFIGURATION
 
-  local -r qlik_data_movement_gateway_version=$(rpm -q --queryformat='%{VERSION}.%{RELEASE}' qlik-data-gateway-data-movement.rpm 2>/dev/null)
-  # echo "Qlik Data Movement Gateway Version: ${qlik_data_movement_gateway_version}"
-
   # image and tag of the gateway image
   local -r qlik_data_movement_gateway_image="${qlik_data_movement_gateway_image:-edwardost/qlik-data-movement-gateway}"
-  local -r qlik_data_movement_gateway_tag="${qlik_data_movement_gateway_tag:-${qlik_data_movement_gateway_version}}"
+  local -r qlik_data_movement_gateway_tag="${qlik_data_movement_gateway_tag:-${qlik_data_movement_gateway_package_version}}"
 
   # image and tag of base image from which gateway image will be derived
-  local -r qlik_data_movement_gateway_base_image="${qlik_data_movement_gateway_base_image-edwardost/ubuntu}"
-  local -r qlik_data_movement_gateway_base_tag="${qlik_data_movement_gateway_base_tag:-22.04}"
+# ubuntu
+#  local -r qlik_data_movement_gateway_base_image="${qlik_data_movement_gateway_base_image-edwardost/ubuntu}"
+#  local -r qlik_data_movement_gateway_base_tag="${qlik_data_movement_gateway_base_tag:-22.04}"
+# redhat
+  local -r qlik_data_movement_gateway_base_image="${qlik_data_movement_gateway_base_image:-redhat/ubi8-init}"
+  local -r qlik_data_movement_gateway_base_tag="${qlik_data_movement_gateway_base_tag:-8.9-3}"
 
   # CONTAINER CONFIGURATION
 
@@ -41,6 +57,12 @@ qlik_data_movement_gateway_config() {
 
   # network on which gateway container will be deployed
   local -r qlik_data_movement_gateway_network="${qlik_data_movement_gateway_network:-qlik-data-movement-gateway-network}"
+
+  # APPLICATION CONFIGURATION
+
+  # qlik cloud tenant
+  local -r qlik_tenant="${qlik_tenant:-obd}"
+
 
   # These shell variables in the host OS are mapped to environment variables in the docker image when the qlik-data-movement-gateway-server command invokes docker run.
   # The shell variables have the same name as the environment variables but are lowercase.
