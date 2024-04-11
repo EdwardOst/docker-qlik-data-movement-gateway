@@ -3,18 +3,19 @@
 qlik_data_movement_gateway_script_path=$(readlink -e "${BASH_SOURCE[0]}")
 qlik_data_movement_gateway_script_dir="${qlik_data_movement_gateway_script_path%/*}"
 
-# shellcheck source=qlik-data-movement-gateway-config.sh
-source "${qlik_data_movement_gateway_script_dir}/qlik-data-movement-gateway-config.sh"
+# shellcheck source=qlik_data_movement_gateway_config.sh
+source "${qlik_data_movement_gateway_script_dir}/qlik_data_movement_gateway_config.sh"
 
 function qlik_data_movement_gateway_build() {
 
   if ! [ -f "${qlik_data_movement_gateway_package}" ]; then
-    echo "Error: qlik data movement gateway package '${qlik_data_movement_gateway_package}' not found.  Use qlik_data_movement_gateway_download to get the package."
+    printf "Error: qlik data movement gateway package '%s' not found.  Use qlik_data_movement_gateway_download to get the package.\n" \
+      "${qlik_data_movement_gateway_package}"
     return 1
   fi
 
 #  local -r qlik_data_movement_gateway_version=$(rpm -q --queryformat='%{VERSION}.%{RELEASE}' qlik-data-gateway-data-movement.rpm 2>/dev/null)
-#  echo "Qlik Data Movement Gateway Version: ${qlik_data_movement_gateway_version}"
+#  printf "Qlik Data Movement Gateway Version: %s\n" "${qlik_data_movement_gateway_version}"
 
   docker build -t "${qlik_data_movement_gateway_image}:${qlik_data_movement_gateway_tag}"  \
     --build-arg base_image="${qlik_data_movement_gateway_base_image}" \
@@ -28,7 +29,7 @@ function qlik_data_movement_gateway_build() {
   declare -r build_status=$?
 
   if [ ${build_status} -ne 0 ]; then
-    echo "docker build command failed with status ${build_status}" >&2
+    printf "Error: docker build command failed with status %s\n" "${build_status}" >&2
     return ${build_status}
   fi
 
@@ -37,13 +38,13 @@ function qlik_data_movement_gateway_build() {
   if [ $# -gt 0 ]; then
     local result=0
     case $1 in
-      config | setup | server)
+      config | download | build | setup | server)
         set -- qlik_data_movement_gateway_"$1" "${@:2}"
         "$@"
         result=$?
       ;;
       *)
-        echo "unknown subcommand(s):" "${@}"
+        printf "unknown subcommand(s): %s\n" "${*}"
         result=1
     esac
     return ${result}

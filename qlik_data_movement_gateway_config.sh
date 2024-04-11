@@ -98,13 +98,13 @@ EOF
   if [ $# -gt 0 ]; then
     local result=0
     case $1 in
-      download | build | setup | server)
+      config | download | build | setup | server)
         set -- qlik_data_movement_gateway_"$1" "${@:2}"
         "$@"
         result=$?
       ;;
       *)
-        echo "unknown subcommand(s):" "${@}"
+        printf "unknown subcommand(s): %s\n" "${*}"
         result=1
     esac
     return ${result}

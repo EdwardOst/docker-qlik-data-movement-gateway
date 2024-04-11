@@ -3,8 +3,8 @@
 qlik_data_movement_gateway_script_path=$(readlink -e "${BASH_SOURCE[0]}")
 qlik_data_movement_gateway_script_dir="${qlik_data_movement_gateway_script_path%/*}"
 
-# shellcheck source=qlik-data-movement-gateway-config.sh
-source "${qlik_data_movement_gateway_script_dir}/qlik-data-movement-gateway-config.sh"
+# shellcheck source=qlik_data_movement_gateway_config.sh
+source "${qlik_data_movement_gateway_script_dir}/qlik_data_movement_gateway_config.sh"
 
 
 qlik_data_movement_gateway_setup() {
@@ -17,22 +17,22 @@ qlik_data_movement_gateway_setup() {
   local docker_network_exists
   docker_network_exists=$( docker network ls -q -f name="${qlik_data_movement_gateway_network}" )
   if [ -z "${docker_network_exists}" ]; then
-    echo "Creating docker network ${qlik_data_movement_gateway_network}"
+    printf "Creating docker network %s\n" "${qlik_data_movement_gateway_network}"
     docker network create "${qlik_data_movement_gateway_network}"
   else
-    echo "Docker network ${qlik_data_movement_gateway_network}(${docker_network_exists}) already exists"
+    printf "Docker network %s(%s) already exists\n" "${qlik_data_movement_gateway_network}" "${docker_network_exists}"
   fi
 
   if [ $# -gt 0 ]; then
     local result=0
     case $1 in
-      config | download | build | server)
+      config | download | build | setup | server)
         set -- qlik_data_movement_gateway_"$1" "${@:2}"
         "$@"
         result=$?
       ;;
       *)
-        echo "unknown subcommand(s):" "${@}"
+        printf "unknown subcommand(s): %s\n" "${*}"
         result=1
     esac
     return ${result}
