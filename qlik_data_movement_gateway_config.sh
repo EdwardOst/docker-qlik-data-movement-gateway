@@ -22,6 +22,8 @@ qlik_data_movement_gateway_config() {
       ;;
   esac
 
+  # TODO: add usage message
+
 
   # BUILD ENVIRONMENT CONFIGURATION
 
@@ -30,14 +32,9 @@ qlik_data_movement_gateway_config() {
   local -r qlik_data_movement_gateway_organization="${qlik_data_movement_gateway_organization:-EdwardOst}"
   local -r qlik_data_movement_gateway_repo="${qlik_data_movement_gateway_repo:-qlik-releases}"
 
-  # debian package for ubuntu
-#  local -r qlik_data_movement_gateway_package_deb_version="2023.11-5"
-#  local -r qlik_data_movement_gateway_package_deb_platform="amd64"
-#  local -r qlik_data_movement_gateway_package_deb="${qlik_data_movement_gateway_package_deb:-qlik-data-gateway-data-movement_${qlik_data_movement_gateway_package_deb_version}_${qlik_data_movement_gateway_package_deb_platform}.deb}"
-
   # rpm package for redhat
-  local -r qlik_data_movement_gateway_package_rpm_version="2023.11-4"
-  local -r qlik_data_movement_gateway_package_rpm_platform="x86_64"
+  local -r qlik_data_movement_gateway_package_rpm_version="${qlik_data_movement_gateway_package_rpm_version:-2023.11-4}"
+  local -r qlik_data_movement_gateway_package_rpm_platform="${qlik_data_movement_gateway_package_rpm_platform:-x86_64}"
   local -r qlik_data_movement_gateway_package_rpm="${qlik_data_movement_gateway_package_rpm:-qlik-data-gateway-data-movement_${qlik_data_movement_gateway_package_rpm_version}_${qlik_data_movement_gateway_package_rpm_platform}.rpm}"
 
   local -r qlik_data_movement_gateway_package_version="${qlik_data_movement_gateway_package_rpm_version}"
@@ -57,13 +54,13 @@ qlik_data_movement_gateway_config() {
 #  local -r qlik_data_movement_gateway_base_image="${qlik_data_movement_gateway_base_image-edwardost/ubuntu}"
 #  local -r qlik_data_movement_gateway_base_tag="${qlik_data_movement_gateway_base_tag:-22.04}"
 # redhat
-  local -r qlik_data_movement_gateway_base_image="${qlik_data_movement_gateway_base_image:-redhat/ubi8-init}"
-  local -r qlik_data_movement_gateway_base_tag="${qlik_data_movement_gateway_base_tag:-8.9-3}"
+  local -r qlik_data_movement_gateway_base_image="${qlik_data_movement_gateway_base_image:-edwardost/ubi8-minimal}"
+  local -r qlik_data_movement_gateway_base_tag="${qlik_data_movement_gateway_base_tag:-8.9-1161}"
 
   # CONTAINER CONFIGURATION
 
   # name of gateway container
-  local -r qlik_data_movement_gateway_container_name="${qlik_data_movement_gateway_container_name:-qlik_data_movement_gateway}"
+  local -r qlik_data_movement_gateway_container_name="${qlik_data_movement_gateway_container_name:-qlik-data-movement-gateway}"
 
   # data volume used by gateway image
   local -r qlik_data_movement_gateway_volume="${qlik_data_movement_gateway_volume:-qlik-data-movement-gateway-data}"
@@ -98,7 +95,7 @@ EOF
   if [ $# -gt 0 ]; then
     local result=0
     case $1 in
-      config | download | build | setup | server)
+      config | download | build | setup | run | server)
         set -- qlik_data_movement_gateway_"$1" "${@:2}"
         "$@"
         result=$?

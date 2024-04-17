@@ -9,21 +9,14 @@ source "${qlik_data_movement_gateway_script_dir}/qlik_data_movement_gateway_conf
 
 qlik_data_movement_gateway_server() {
 
-  # run in daemon mode and keep the container rather than removing it
-#  docker run --name "${qlik_data_movement_gateway_container_name}" \
-#    -v "${qlik_data_movement_gateway_volume}":/opt/qlik_data_movement_gateway \
-#    ${qlik_data_movement_gateway_network:+ --network="${qlik_data_movement_gateway_network}"} \
-#    -d --restart unless-stopped \
-#    "${qlik_data_movement_gateway_image}:${qlik_data_movement_gateway_tag}"
+  docker run -d --name "${qlik_data_movement_gateway_container_name}" "${qlik_data_movement_gateway_image}:${qlik_data_movement_gateway_tag}"
 
-  docker run --name "${qlik_data_movement_gateway_container_name}" \
-    -d \
-    "${qlik_data_movement_gateway_image}:${qlik_data_movement_gateway_tag}"
+  docker exec "${qlik_data_movement_gateway_container_name}" "/root/${qlik_package_version}/opt/qlik/gateway/movement/bin/agentctl qcs get_registration"
 
   if [ $# -gt 0 ]; then
     local result=0
     case $1 in
-      config | download | build | setup | server)
+      config | download | build | setup | run | server)
         set -- qlik_data_movement_gateway_"$1" "${@:2}"
         "$@"
         result=$?

@@ -26,7 +26,7 @@ qlik_data_movement_gateway_setup() {
   if [ $# -gt 0 ]; then
     local result=0
     case $1 in
-      config | download | build | setup | server)
+      config | download | build | setup | run | server)
         set -- qlik_data_movement_gateway_"$1" "${@:2}"
         "$@"
         result=$?

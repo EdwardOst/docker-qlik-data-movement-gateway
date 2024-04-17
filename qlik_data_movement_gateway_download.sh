@@ -8,6 +8,7 @@ qlik_data_movement_gateway_script_dir="${qlik_data_movement_gateway_script_path%
 source "${qlik_data_movement_gateway_script_dir}/qlik_data_movement_gateway_config.sh"
 
 qlik_data_movement_gateway_download() {
+  set -x
 
   local token
   case "${1}" in
@@ -16,19 +17,17 @@ qlik_data_movement_gateway_download() {
       shift  1
       ;;
   esac
-  local -r github_token="${token:-${github_token?' --token=<github token> argument or github_token global var required to download qlik data movement gateway from github'}}"
+  local -r github_token="${token:-${github_token}}"
+  [ -z "${github_token}" ] && qlik_data_movement_gateway_download_usage && return 1
 
   local -r download_url=$(curl -s -H "Authorization: Bearer ${github_token}" "https://api.github.com/repos/${qlik_data_movement_gateway_organization}/${qlik_data_movement_gateway_repo}/contents/${qlik_data_movement_gateway_package}" | jq -r ".download_url" )
-  curl -sLJ -o "${qlik_data_movement_gateway_package}" -H "Authorization: Bearer ${github_token}" "${download_url}"
-
-  # this must not be local
-  # this will set the qlik_data_movement_gateway_version set in the outer scope of the qlik_data_movement_gateway_config
-  #qlik_data_movement_gateway_version=$(rpm -q --queryformat='%{VERSION}.%{RELEASE}' qlik-data-gateway-data-movement.rpm 2>/dev/null)
+  echo "download_url=${download_url}"
+#  curl -sLJ -o "${qlik_data_movement_gateway_package}" -H "Authorization: Bearer ${github_token}" "${download_url}"
 
   if [ $# -gt 0 ]; then
     local result=0
     case $1 in
-      config | download | build | setup | server)
+      config | download | build | setup | run | server)
         set -- qlik_data_movement_gateway_"$1" "${@:2}"
         "$@"
         result=$?
@@ -42,4 +41,9 @@ qlik_data_movement_gateway_download() {
     return 0
   fi
 
+}
+
+
+qlik_data_movement_gateway_download_usage() {
+  printf "Usage: qlik_data_movement_gateway config download [-t | --token]=<github token>\nGithub token required.\n"
 }

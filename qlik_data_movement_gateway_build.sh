@@ -17,7 +17,7 @@ function qlik_data_movement_gateway_build() {
 #  local -r qlik_data_movement_gateway_version=$(rpm -q --queryformat='%{VERSION}.%{RELEASE}' qlik-data-gateway-data-movement.rpm 2>/dev/null)
 #  printf "Qlik Data Movement Gateway Version: %s\n" "${qlik_data_movement_gateway_version}"
 
-  docker build -t "${qlik_data_movement_gateway_image}:${qlik_data_movement_gateway_tag}"  \
+  docker build --no-cache -t "${qlik_data_movement_gateway_image}:${qlik_data_movement_gateway_tag}"  \
     --build-arg base_image="${qlik_data_movement_gateway_base_image}" \
     --build-arg base_tag="${qlik_data_movement_gateway_base_tag}" \
     --build-arg qlik_package="${qlik_data_movement_gateway_package}" \
@@ -38,7 +38,7 @@ function qlik_data_movement_gateway_build() {
   if [ $# -gt 0 ]; then
     local result=0
     case $1 in
-      config | download | build | setup | server)
+      config | download | build | setup | run | server)
         set -- qlik_data_movement_gateway_"$1" "${@:2}"
         "$@"
         result=$?

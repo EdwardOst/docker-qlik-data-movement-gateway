@@ -18,5 +18,8 @@ source "${qlik_data_movement_gateway_script_dir}/qlik_data_movement_gateway_buil
 # shellcheck source=qlik_data_movement_gateway_setup.sh
 source "${qlik_data_movement_gateway_script_dir}/qlik_data_movement_gateway_setup.sh"
 
+# shellcheck source=qlik_data_movement_gateway_run.sh
+source "${qlik_data_movement_gateway_script_dir}/qlik_data_movement_gateway_run.sh"
+
 # shellcheck source=qlik_data_movement_gateway_server.sh
 source "${qlik_data_movement_gateway_script_dir}/qlik_data_movement_gateway_server.sh"
