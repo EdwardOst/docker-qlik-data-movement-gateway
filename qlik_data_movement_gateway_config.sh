@@ -35,14 +35,9 @@ qlik_data_movement_gateway_config() {
   local -r qlik_data_movement_gateway_repo="${qlik_data_movement_gateway_repo:-qlik-releases}"
   local -r qlik_data_movement_gateway_operator="edwardost"
 
-  # rpm package for redhat
-  local -r qlik_data_movement_gateway_package_rpm_version="${qlik_data_movement_gateway_package_rpm_version:-2023.11-4}"
-  local -r qlik_data_movement_gateway_package_rpm_platform="${qlik_data_movement_gateway_package_rpm_platform:-x86_64}"
-  local -r qlik_data_movement_gateway_package_rpm="${qlik_data_movement_gateway_package_rpm:-qlik-data-gateway-data-movement_${qlik_data_movement_gateway_package_rpm_version}_${qlik_data_movement_gateway_package_rpm_platform}.rpm}"
-
-  local -r qlik_data_movement_gateway_package_version="${qlik_data_movement_gateway_package_rpm_version}"
-  local -r qlik_data_movement_gateway_package_platform="${qlik_data_movement_gateway_package_rpm_platform}"
-  local -r qlik_data_movement_gateway_package="${qlik_data_movement_gateway_package_rpm}"
+  local -r qlik_data_movement_gateway_package_version="${qlik_data_movement_gateway_package_version:-2023.11-4}"
+  local -r qlik_data_movement_gateway_package_platform="${qlik_data_movement_gateway_package_platform:-x86_64}"
+  local -r qlik_data_movement_gateway_package="${qlik_data_movement_gateway_package:--qlik-data-gateway-data-movement_${qlik_data_movement_gateway_package_version}_${qlik_data_movement_gateway_package_platform}.rpm}"
 
   # IMAGE CONFIGURATION
 
