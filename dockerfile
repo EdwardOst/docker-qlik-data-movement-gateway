@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-ARG base_image=edwardost/ubi8-minimal
+ARG base_image=redhat/ubi8-minimal
 ARG base_tag=8.9-1161
 
 FROM ${base_image}:${base_tag}

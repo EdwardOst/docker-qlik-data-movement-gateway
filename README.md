@@ -130,6 +130,8 @@ root       203   199 99 14:19 ?        00:00:57 ../jvm/bin/java -jar /opt/qlik/g
 root       323     0  0 14:20 ?        00:00:00 ps -ef
 ````
 
+### Installing with dDifferent RPM Download
+
 If you prefer to download the gateway rpm directly you can use the customization methods described in the [design](#design) section below to
 override the rpm config settings.  You can determine the platform, version, and release of the rpm by using the `rpm -qi` command.  Concatenate
 the rpm version and release separated by a hyphen to derive the `qlik_data_movement_gateway_package_version`.
@@ -151,6 +153,42 @@ my_gateway() {
 # now use the customized gateway to build the image and then start the container
 my_gateway build init registration
 ````
+
+### Working with a Different Base Image
+
+By default the gateway dockerfile derives through an intermediate image from the Redhat ubi8-minimal as its base image.
+The intermediate image is used to add necessary dependencies such as the procps-ng package.
+This enables the widely used linux `ps` utility, which is also used by the `repagent`.
+Without this package the `repagent status` command will not work, incorrectly showing that the service is not running regardless of actual status.
+
+In addition, the Redhat ubi8-minimal image uses the slimmed down microdnf package installer rather than the full dnf.  This is reflected in the config
+setting `qlik_data_movement_gateway_dnf_command`.  If you wish to override the base image you may also need to override this setting.
+
+You can do this using the techniques described in the [design](#design) section below.
+
+````bash
+source qlik-data-movement-gateway-init
+
+my_gateway() {
+  # use a different package manager
+  qlik_data_movement_gateway_dnf_command="dnf"
+
+  # use a different base image
+  qlik_data_movement_gateway_base_image="redhat/ubi8"
+  qlik_data_movement_gateway_base_tag="8.9-1160"
+
+  qlik_data_movement_gateway "$@"
+}
+
+# now use the customized gateway to build the image and then start the container
+my_gateway build init registration
+````
+
+The example above overrides the base image to use the ubi8 standard image directly from Redhat rather than an intermediate image created by the user.
+Since it uses the standard image a different package manager is needed.
+In this case the ubi8 standard image includes the `procps` package already.
+If your base image does not include the `procps` or other packages, consider creating an intermediate image with the relevant packages installed
+and refer to that as shown above.
 
 ## Design
 
