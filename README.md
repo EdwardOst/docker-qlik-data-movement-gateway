@@ -36,18 +36,14 @@ Download the latest RPM from edwardost/qlik-releases github repository.
 
 Build the gateway docker image.
 
-    gateway docker
+    gateway build
 
-Initialize a the gateway instance.
+Initialize a gateway instance.
 
     gateway init
 
-Initializing a gateway instance will create a new container using the docker image.  The first time the container starts it will generate a registration key and
-then stop to provide time for manual registration of the key in Qlik Cloud.
-
-Start the gateway container.
-
-    gateway start
+Initializing a gateway instance will create a new container using the docker image.
+The first time the container starts it will generate a registration key and store it in `/root/registration.txt`.
 
 Print out the registration key.  It can also be found in the Docker log.
 
@@ -57,9 +53,17 @@ Register the gateway interactively in the Qlik Cloud UI.
 
 Stop the gateway container.
 
+    gateway stop
+
+Start the gateway container.
+
+    gateway start
+
+Stop the replicate service running within the container.
+
     gateway service stop
 
-Start the container again.  This time it will automatically start the repagent service.
+Start the replicate service again.
 
     gateway service start
 
@@ -94,14 +98,9 @@ Now edit the the `qlik_data_movement_gateway_operator` property to reflect your 
 
 To create a gateway container:
 
-    gateway download -t=<github_token> build init
+    gateway download -t=<github_token> build init registration
 
 The github_token reference asbove must be for a user that is allowed to access your forked `qlik-releases` repo.
-
-At this point container is not running because it is waiting to allow you to register it with Qlik Cloud Management Console.
-To register the gateway you will need the registration key.  So you need to (re)start the container and then issue the registration command.
-
-   gateway start registration
 
 This will print out the registration to the console.  Goto Qlik Cloud Management Console -> Data Gateways and
 register the new gateway.
@@ -131,6 +130,27 @@ root       203   199 99 14:19 ?        00:00:57 ../jvm/bin/java -jar /opt/qlik/g
 root       323     0  0 14:20 ?        00:00:00 ps -ef
 ````
 
+If you prefer to download the gateway rpm directly you can use the customization methods described in the [design](#design) section below to
+override the rpm config settings.  You can determine the platform, version, and release of the rpm by using the `rpm -qi` command.  Concatenate
+the rpm version and release separated by a hyphen to derive the `qlik_data_movement_gateway_package_version`.
+
+* qlik_data_movement_gateway_package
+* qlik_data_movement_gateway_package_platform
+* qlik_data_movement_gateway_package_version
+
+````bash
+source qlik-data-movement-gateway-init
+
+my_gateway() {
+  qlik_data_movement_gateway_package="qlik-data-gateway-data-movement.rpm"
+  qlik_data_movement_gateway_package_platform="x86_64"
+  qlik_data_movement_gateway_package_version="2023.11-4"
+  qlik_data_movement_gateway "$@"
+}
+
+# now use the customized gateway to build the image and then start the container
+my_gateway build init registration
+````
 
 ## Design
 
@@ -194,7 +214,7 @@ gateway2() {
   qlik_data_movement_gateway_package_rpm="some_rpm_file_name.rpm"
   qlik_data_movement_gateway "$@"
 }
-gateway2 build server
+gateway2 build init
 
 gateway3() {
   qlik_data_movement_gateway_package_rpm_version="2023.11-5"
@@ -202,5 +222,5 @@ gateway3() {
   qlik_data_movement_gateway_package_rpm="another_rpm_file_name.rpm"
   qlik_data_movement_gateway "$@"
 }
-gateway3 build server
+gateway3 build init
 ````
