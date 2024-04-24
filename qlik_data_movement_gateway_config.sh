@@ -33,6 +33,7 @@ qlik_data_movement_gateway_config() {
   # the default download function downloads from github
   local -r qlik_data_movement_gateway_organization="${qlik_data_movement_gateway_organization:-EdwardOst}"
   local -r qlik_data_movement_gateway_repo="${qlik_data_movement_gateway_repo:-qlik-releases}"
+  local -r qlik_data_movement_gateway_operator="edwardost"
 
   # rpm package for redhat
   local -r qlik_data_movement_gateway_package_rpm_version="${qlik_data_movement_gateway_package_rpm_version:-2023.11-4}"
@@ -43,16 +44,14 @@ qlik_data_movement_gateway_config() {
   local -r qlik_data_movement_gateway_package_platform="${qlik_data_movement_gateway_package_rpm_platform}"
   local -r qlik_data_movement_gateway_package="${qlik_data_movement_gateway_package_rpm}"
 
-#  local -r qlik_data_movement_gateway_version=$(rpm -q --queryformat='%{VERSION}.%{RELEASE}' qlik-data-gateway-data-movement.rpm 2>/dev/null)
-
   # IMAGE CONFIGURATION
 
   # image and tag of the gateway image
-  local -r qlik_data_movement_gateway_image="${qlik_data_movement_gateway_image:-edwardost/qlik-data-movement-gateway}"
+  local -r qlik_data_movement_gateway_image="${qlik_data_movement_gateway_image:-${qlik_data_movement_gateway_operator}/qlik-data-movement-gateway}"
   local -r qlik_data_movement_gateway_tag="${qlik_data_movement_gateway_tag:-${qlik_data_movement_gateway_package_version}}"
 
   # image and tag of base image from which gateway image will be derived
-  local -r qlik_data_movement_gateway_base_image="${qlik_data_movement_gateway_base_image:-edwardost/ubi8}"
+  local -r qlik_data_movement_gateway_base_image="${qlik_data_movement_gateway_base_image:-${qlik_data_movement_gateway_operator}/ubi8}"
   local -r qlik_data_movement_gateway_base_tag="${qlik_data_movement_gateway_base_tag:-8.9-1160}"
 
   # CONTAINER CONFIGURATION

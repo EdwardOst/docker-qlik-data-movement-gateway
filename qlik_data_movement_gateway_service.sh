@@ -50,6 +50,7 @@ qlik_data_movement_gateway_registration() {
 
   printf "registration:\n"
 
+  #printf "docker exec %s cat \"/root/registration.txt\"\n" "${qlik_data_movement_gateway_container_name}"
   # shellcheck disable=SC2088
   docker exec "${qlik_data_movement_gateway_container_name}" cat "/root/registration.txt"
 

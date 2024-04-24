@@ -2,8 +2,14 @@
 
 Scripts for building and running Qlik Data Movement Gateway as a container.
 
+* [Commands](#commands)
+* [Usage](#usage)
+* [Install](#install)
+* [Design](#design)
+* [Examples](#examples)
 
-### Commands:
+
+## Commands:
 
 Source the `qlik-data-movement-gateway-init` script and the commands below will become available.
 
@@ -22,7 +28,7 @@ Source the `qlik-data-movement-gateway-init` script and the commands below will 
 |  **config**                         | Common configuration context for all commands captured as local function variables. Invoked by prior to other commands. |
 
 
-### Usage
+## Usage
 
 Download the latest RPM from edwardost/qlik-releases github repository.
 
@@ -49,28 +55,84 @@ Print out the registration key.  It can also be found in the Docker log.
 
 Register the gateway interactively in the Qlik Cloud UI.
 
-Stop the gateway service while leaving the gateway container running.
+Stop the gateway container.
 
     gateway service stop
 
-Start the service from a running gateway container.
+Start the container again.  This time it will automatically start the repagent service.
 
     gateway service start
-
-Create a shell for interactively running commands in the gateway container.
-
-    gateway shell
-
-A shell command is always a terminating command since it results in an enteractive session.
 
 Run an ad-hoc command within the gateway container.
 
     gateway ps -ef
 
 All arguments after gateway command are passed to /bin/bash within gateway container.  An ad-hoc command is always a terminating command.
+This command should show the repagent and other processes are running.
+
+Create a shell for interactively running commands in the gateway container.
+
+    gateway shell
+
+A shell command is always a terminating command since it results in an interactive session.
 
 
-### Design
+## Install
+
+This has a dependency on the ubi8 project which provides the base image upon which it is built.  So first install the ubi8 project and build
+the ubi8 standard image.
+
+It also depends on being able to download the latest QCDI data movement gateway rpm from a github repo.  A sample repo is provided using the
+`qlik-releases` repository.  Fork that repo, then clone it from your fork to your laptop, and download the latest gateway
+rpm from the Qlik Cloud site.  Run the run the prepare.sh script and do a commit and push to your fork.
+
+Now all of your dependent resources are prepared.
+
+Clone this repository and customize the `qlik_data_movement_gateway_config.sh`.
+Edit the `qlik_data_movement_gateway_organization` to be your github username for the `qlik-releases` fork you created above.
+Now edit the the `qlik_data_movement_gateway_operator` property to reflect your docker username.  This will be prefixed to the docker images you create.
+
+To create a gateway container:
+
+    gateway download -t=<github_token> build init
+
+The github_token reference asbove must be for a user that is allowed to access your forked `qlik-releases` repo.
+
+At this point container is not running because it is waiting to allow you to register it with Qlik Cloud Management Console.
+To register the gateway you will need the registration key.  So you need to (re)start the container and then issue the registration command.
+
+   gateway start registration
+
+This will print out the registration to the console.  Goto Qlik Cloud Management Console -> Data Gateways and
+register the new gateway.
+
+After the new gateway is registered it will show as Disconnected.  Refresh the browser.  It should show connected.  If it does not, 
+Disable and then Enable it in Qlik Management Console.  If it still does not show as connected stop and then start the container.
+
+    gateway stop
+    gateway start
+
+Now confirm that the replicate and agent processes are running by using the `gateway ps -ef` command.  It should look similar to below.
+
+````
+$ gateway ps -ef
+config:
+UID        PID  PPID  C STIME TTY          TIME CMD
+root         1     0  0 14:19 ?        00:00:00 /sbin/docker-init -- /root/repagent_start.sh
+root         7     1  0 14:19 ?        00:00:00 bash /root/repagent_start.sh
+root        45     1 25 14:19 ?        00:00:11 /opt/qlik/gateway/movement/bin/agentctl -d /opt/qlik/gateway/movement/data service host -b
+root        87     1  0 14:19 ?        00:00:00 /opt/qlik/gateway/movement/bin/repctl -d /opt/qlik/gateway/movement/data service start
+root        88    87  3 14:19 ?        00:00:01 /opt/qlik/gateway/movement/bin/repctl -d /opt/qlik/gateway/movement/data service start
+root       119     7  0 14:19 ?        00:00:00 /usr/bin/coreutils --coreutils-prog-shebang=sleep /usr/bin/sleep 600
+root       124    45  0 14:19 ?        00:00:00 /bin/bash /opt/qlik/gateway/movement/qcs_agents/qdi-db-commands/bin/start.sh
+root       133   124 99 14:19 ?        00:00:47 ../jvm/bin/java -cp /opt/qlik/gateway/movement/qcs_agents/qdi-db-commands/bin/*:/opt/qlik/gateway/movement/qcs_agents/qdi-db-commands/bin/../lib/* com.qlik.QdiDbCommands local
+root       199    45  0 14:19 ?        00:00:00 /bin/bash /opt/qlik/gateway/movement/qcs_agents/external-data-provider/bin/start.sh
+root       203   199 99 14:19 ?        00:00:57 ../jvm/bin/java -jar /opt/qlik/gateway/movement/qcs_agents/external-data-provider/bin/ext-data-provider-agent-1.0.2.jar
+root       323     0  0 14:20 ?        00:00:00 ps -ef
+````
+
+
+## Design
 
 Only local variables are used for configuration.  They are initialized by the config function and are only scoped within that function.
 
@@ -81,7 +143,7 @@ Local shell variables are initialized to any prior existing value before using h
 setting them before calling the qlik_data_gateway function.
 
 
-### Example
+## Examples
 
 ````bash
 source qlik-data-movement-gateway-init

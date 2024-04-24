@@ -25,8 +25,7 @@ function qlik_data_movement_gateway_build() {
     --build-arg qlik_package="${qlik_data_movement_gateway_package}" \
     --build-arg qlik_package_version="${qlik_data_movement_gateway_package_version}" \
     --build-arg qlik_package_platform="${qlik_data_movement_gateway_package_platform}" \
-    --build-arg qlik_tenant="${qlik_tenant}" \
-    "${@}" .
+    --build-arg qlik_tenant="${qlik_tenant}" .
 
   declare -r build_status=$?
 
