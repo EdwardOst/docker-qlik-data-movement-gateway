@@ -11,8 +11,7 @@ qlik_data_movement_gateway_setup() {
 
   printf "setup:\n"
 
-  docker pull "${qlik_data_movement_gateway_image}/${qlik_data_movement_gateway_tag}"
-
+  # create a volume for the data directory
   docker volume create "${qlik_data_movement_gateway_volume}"
 
   # create a docker network if it does not already exist

@@ -18,27 +18,9 @@ source "${qlik_data_movement_gateway_script_dir}/qlik_data_movement_gateway_buil
 # shellcheck source=qlik_data_movement_gateway_setup.sh
 source "${qlik_data_movement_gateway_script_dir}/qlik_data_movement_gateway_setup.sh"
 
-# shellcheck source=qlik_data_movement_gateway_init.sh
-source "${qlik_data_movement_gateway_script_dir}/qlik_data_movement_gateway_init.sh"
-
-# shellcheck source=qlik_data_movement_gateway_registration.sh
-source "${qlik_data_movement_gateway_script_dir}/qlik_data_movement_gateway_registration.sh"
-
-# shellcheck source=qlik_data_movement_gateway_start.sh
-source "${qlik_data_movement_gateway_script_dir}/qlik_data_movement_gateway_start.sh"
-
-# shellcheck source=qlik_data_movement_gateway_stop.sh
-source "${qlik_data_movement_gateway_script_dir}/qlik_data_movement_gateway_stop.sh"
+# shellcheck source=qlik_data_movement_gateway_container.sh
+source "${qlik_data_movement_gateway_script_dir}/qlik_data_movement_gateway_container.sh"
 
 # shellcheck source=qlik_data_movement_gateway_service.sh
 source "${qlik_data_movement_gateway_script_dir}/qlik_data_movement_gateway_service.sh"
-
-# shellcheck source=qlik_data_movement_gateway_service_start.sh
-source "${qlik_data_movement_gateway_script_dir}/qlik_data_movement_gateway_service_start.sh"
-
-# shellcheck source=qlik_data_movement_gateway_service_stop.sh
-source "${qlik_data_movement_gateway_script_dir}/qlik_data_movement_gateway_service_stop.sh"
-
-# shellcheck source=qlik_data_movement_gateway_shell.sh
-source "${qlik_data_movement_gateway_script_dir}/qlik_data_movement_gateway_shell.sh"
 

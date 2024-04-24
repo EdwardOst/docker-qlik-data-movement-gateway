@@ -20,3 +20,44 @@ qlik_data_movement_gateway_init() {
     return 0
   fi
 }
+
+
+qlik_data_movement_gateway_start() {
+
+  printf "start:\n"
+
+  docker start "${qlik_data_movement_gateway_container_name}"
+
+  if [ $# -gt 0 ]; then
+    qlik_data_movement_gateway "${@}"
+    return $?
+  else
+    return 0
+  fi
+}
+
+
+qlik_data_movement_gateway_stop() {
+
+  printf "stop:\n"
+
+  docker stop "${qlik_data_movement_gateway_container_name}"
+
+  if [ $# -gt 0 ]; then
+    qlik_data_movement_gateway "${@}"
+    return $?
+  else
+    return 0
+  fi
+}
+
+
+qlik_data_movement_gateway_shell() {
+
+  printf "shell:\n"
+
+  docker exec -it "${qlik_data_movement_gateway_container_name}" /bin/bash
+
+  return $?
+
+}

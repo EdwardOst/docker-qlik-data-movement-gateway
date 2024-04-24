@@ -44,3 +44,20 @@ qlik_data_movement_gateway_service() {
     return 0
   fi
 }
+
+
+qlik_data_movement_gateway_registration() {
+
+  printf "registration:\n"
+
+  # shellcheck disable=SC2088
+  docker exec "${qlik_data_movement_gateway_container_name}" cat "/root/registration.txt"
+
+
+  if [ $# -gt 0 ]; then
+    qlik_data_movement_gateway "${@}"
+    return $?
+  else
+    return 0
+  fi
+}

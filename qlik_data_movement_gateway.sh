@@ -15,7 +15,7 @@ qlik_data_movement_gateway() {
 
   if [ $# -gt 0 ]; then
     local result=0
-    # if this is the first pass and config has not been called, then call it
+    # if this is the first pass and config has not been called, then call it and chain subsequent function calls
     if [ -z "${qlik_data_movement_gateway_config_called}" ]; then
       # if config is being explicitly called as the first command then discard the extra explicit argument
       if [ "config" = "${1}" ]; then
@@ -26,12 +26,7 @@ qlik_data_movement_gateway() {
     # for subsequent subcommands invoke the explicit command or default to passing the argument to the assumed running container
     else
       case $1 in
-        config)
-          shift 1
-          qlik_data_movement_gateway_config "${@}"
-          result=$?
-          ;;
-        download | setup | build | init | registration | start | stop | service | shell)
+        config | download | setup | build | init | registration | start | stop | service | shell)
           set -- "qlik_data_movement_gateway_$1" "${@:2}"
           "$@"
           result=$?
