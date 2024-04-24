@@ -1,14 +1,13 @@
 # syntax=docker/dockerfile:1
-ARG base_image=edwardost/ubi8
-ARG base_tag=8.9-1160
+ARG base_image=edwardost/ubi8-minimal
+ARG base_tag=8.9-1161
 
 FROM ${base_image}:${base_tag}
 
   ARG qlik_package=qlik-data-gateway-data-movement_2023.11-4_x86_64.rpm
   ARG qlik_package_version=2023.11-4
   ARG qlik_package_platform=x86_64
-  # ARG dnf_command=microdnf
-  ARG dnf_command=dnf
+  ARG dnf_command=microdnf
   ARG qlik_tenant=obd
 
   LABEL maintainer="eost@qlik.com"
@@ -16,15 +15,11 @@ FROM ${base_image}:${base_tag}
   LABEL qlik_package_platform="${qlik_package_platform}"
   LABEL qlik_tenant="${qlik_tenant}"
 
-  # note that working directory for redhat ubi defaults to / rather than /root or /home/root
+  # redhat ubi working directory defaults to / rather than /root or /home/root
   WORKDIR /root
 
   ADD "${qlik_package}" "${qlik_package}"
-#  ADD "opt" "/opt/"
   COPY --chmod=740 repagent_start.sh "/root/"
-
-#  RUN \
-#    QLIK_CUSTOMER_AGREEMENT_ACCEPT=yes rpm -ivh ${qlik_package}
 
   RUN \
     ${dnf_command} install -y cpio \

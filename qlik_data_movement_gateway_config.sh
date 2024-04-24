@@ -37,17 +37,19 @@ qlik_data_movement_gateway_config() {
 
   local -r qlik_data_movement_gateway_package_version="${qlik_data_movement_gateway_package_version:-2023.11-4}"
   local -r qlik_data_movement_gateway_package_platform="${qlik_data_movement_gateway_package_platform:-x86_64}"
-  local -r qlik_data_movement_gateway_package="${qlik_data_movement_gateway_package:--qlik-data-gateway-data-movement_${qlik_data_movement_gateway_package_version}_${qlik_data_movement_gateway_package_platform}.rpm}"
+  local -r qlik_data_movement_gateway_package="${qlik_data_movement_gateway_package:-qlik-data-gateway-data-movement_${qlik_data_movement_gateway_package_version}_${qlik_data_movement_gateway_package_platform}.rpm}"
+
+  local -r qlik_data_movement_gateway_dnf_command="microdnf"
 
   # IMAGE CONFIGURATION
 
-  # image and tag of the gateway image
+  # gateway image and tag
   local -r qlik_data_movement_gateway_image="${qlik_data_movement_gateway_image:-${qlik_data_movement_gateway_operator}/qlik-data-movement-gateway}"
   local -r qlik_data_movement_gateway_tag="${qlik_data_movement_gateway_tag:-${qlik_data_movement_gateway_package_version}}"
 
-  # image and tag of base image from which gateway image will be derived
-  local -r qlik_data_movement_gateway_base_image="${qlik_data_movement_gateway_base_image:-${qlik_data_movement_gateway_operator}/ubi8}"
-  local -r qlik_data_movement_gateway_base_tag="${qlik_data_movement_gateway_base_tag:-8.9-1160}"
+  # base image and tag from which gateway image will be derived
+  local -r qlik_data_movement_gateway_base_image="${qlik_data_movement_gateway_base_image:-${qlik_data_movement_gateway_operator}/ubi8-minimal}"
+  local -r qlik_data_movement_gateway_base_tag="${qlik_data_movement_gateway_base_tag:-8.9-1161}"
 
   # CONTAINER CONFIGURATION
 
