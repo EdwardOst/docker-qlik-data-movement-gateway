@@ -9,17 +9,62 @@ Source the `qlik-data-movement-gateway-init` script and the commands below will 
 
 | Command                               | Description                                                                                     |
 |:--------------------------------------|:------------------------------------------------------------------------------------------------|
-|  **qlik_data_movement_gateway**       | This is the root command.  It automatically calls config before executing subsequent commands.  |
-|  qlik_data_movement_gateway_config    | Common configuration context for all commands captured as local function variables. It is invoked by default as the first command. |
+|  **qlik_data_movement_gateway**       | Root command calls config before executing subsequent commands in the function chain.           |
 |  **qlik_data_movement_gateway_download** | Downloads the latest qlik data movement gateway image from a repo.  Currently uses personal github repo with git lfs.  Should eventually point to a qlik repo.  Takes a single required argument --token=<github token> |
 |  **qlik_data_movement_gateway_build** | Create a qlik data movement gateway image.                                                      |
 |  **qlik_data_movement_gateway_setup** | Pulls necessary docker images and creates data volumes and docker networks.                     |
-|  **qlik_data_movement_gateway_server**| Start a qlik data movement gateway container.                                                   |
+|  **qlik_data_movement_gateway_init**  | Start a qlik data movement gateway container for the first.                                     |
+|  **qlik_data_movement_gateway_registration **  | Print out the registration key for a gateway container.                                |
 |  **qlik_data_movement_gateway_start** | Start the gateway service in an existing qlik data movement gateway container.                  |
 |  **qlik_data_movement_gateway_stop**  | Stop the gateway service in an existing qlik data movement gateway container.                   |
+|  qlik_data_movement_gateway_config    | Common configuration context for all commands captured as local function variables. Invoked by prior to other commands. |
 
 
 ### Usage
+
+Download the latest RPM from edwardost/qlik-releases github repository.
+
+    gateway download
+
+Build the gateway docker image.
+
+    gateway docker
+
+Initialize a the gateway instance.
+
+    gateway init
+
+Initializing a gateway instance will create a new container using the docker image.  The first time the container starts it will generate a registration key and
+then stop to provide time for manual registration of the key in Qlik Cloud.
+
+Print out the registration key.  It can also be found in the Docker log.
+
+    gateway registration
+
+Register the gateway interactively in the Qlik Cloud UI.
+
+Stop the gateway service while leaving the gateway container running.
+
+    gateway stop
+
+Start the service from a running gateway container.
+
+    gateway start
+
+Create a shell for interactively running commands in the gateway container.
+
+    gateway shell
+
+A shell command is always a terminating command since it results in an enteractive session.
+
+Run an ad-hoc command within the gateway container.
+
+    gateway ps -ef
+
+All arguments after gateway command are passed to /bin/bash within gateway container.  An ad-hoc command is always a terminating command.
+
+
+### Design
 
 Only local variables are used for configuration.  They are initialized by the config function and are only scoped within that function.
 
@@ -47,6 +92,12 @@ By convention, all commands recognize abbreviations for other subcommands.
 
 ````bash
 qlik_data_movement_gateway download build server
+````
+
+`gatway` and `qlik_gateway` are synonyms for the qlik_data_movement_gateway function.
+
+````bash
+gateway download build server
 ````
 
 By convention, config only sets variables which do not already have a prior value.  To override a config setting set a global shell variable

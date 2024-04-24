@@ -7,11 +7,11 @@ qlik_data_movement_gateway_script_dir="${qlik_data_movement_gateway_script_path%
 source "${qlik_data_movement_gateway_script_dir}/qlik_data_movement_gateway_config.sh"
 
 
-qlik_data_movement_gateway_stop() {
+qlik_data_movement_gateway_service_stop() {
 
-  printf "stop:\n"
+  printf "service.stop:\n"
 
-  docker stop "${qlik_data_movement_gateway_container_name}"
+  docker exec "${qlik_data_movement_gateway_container_name}" /opt/qlik/gateway/movement/bin/repagent stop
 
   if [ $# -gt 0 ]; then
     qlik_data_movement_gateway "${@}"

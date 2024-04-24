@@ -8,6 +8,9 @@ qlik_data_movement_gateway_script_dir="${qlik_data_movement_gateway_script_path%
 source "${qlik_data_movement_gateway_script_dir}/qlik_data_movement_gateway_config.sh"
 
 qlik_data_movement_gateway_download() {
+
+  printf "download:\n"
+
   local token
   case "${1}" in
     -t=*|--token=*)
@@ -23,22 +26,11 @@ qlik_data_movement_gateway_download() {
   curl -sLJ -o "${qlik_data_movement_gateway_package}" -H "Authorization: Bearer ${github_token}" "${download_url}"
 
   if [ $# -gt 0 ]; then
-    local result=0
-    case $1 in
-      config | download | build | setup | shell | server | start | stop)
-        set -- qlik_data_movement_gateway_"$1" "${@:2}"
-        "$@"
-        result=$?
-      ;;
-      *)
-        docker exec "${qlik_data_movement_gateway_container_name}" "${@}"
-        result=1
-    esac
-    return ${result}
+    qlik_data_movement_gateway "${@}"
+    return $?
   else
     return 0
   fi
-
 }
 
 

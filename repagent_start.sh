@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+#shellcheck disable=SC2164
 cd ~
 if [ -f "registration.txt" ]; then
   /opt/qlik/gateway/movement/bin/repagent start

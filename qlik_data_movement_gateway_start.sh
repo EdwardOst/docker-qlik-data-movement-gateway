@@ -9,23 +9,14 @@ source "${qlik_data_movement_gateway_script_dir}/qlik_data_movement_gateway_conf
 
 qlik_data_movement_gateway_start() {
 
-  docker exec "${qlik_data_movement_gateway_container_name}" /opt/qlik/gateway/movement/bin/repagent start
+  printf "start:\n"
+
+  docker start "${qlik_data_movement_gateway_container_name}"
 
   if [ $# -gt 0 ]; then
-    local result=0
-    case $1 in
-      config | download | build | setup | shell | server | start | stop)
-        set -- qlik_data_movement_gateway_"$1" "${@:2}"
-        "$@"
-        result=$?
-      ;;
-      *)
-        docker exec "${qlik_data_movement_gateway_container_name}" "${@}"
-        result=1
-    esac
-    return ${result}
+    qlik_data_movement_gateway "${@}"
+    return $?
   else
     return 0
   fi
-
 }

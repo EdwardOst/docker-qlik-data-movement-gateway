@@ -7,11 +7,11 @@ qlik_data_movement_gateway_script_dir="${qlik_data_movement_gateway_script_path%
 source "${qlik_data_movement_gateway_script_dir}/qlik_data_movement_gateway_config.sh"
 
 
-qlik_data_movement_gateway_stop() {
+qlik_data_movement_gateway_init() {
 
-  printf "stop:\n"
+  printf "init:\n"
 
-  docker stop "${qlik_data_movement_gateway_container_name}"
+  docker run -d --init --name "${qlik_data_movement_gateway_container_name}" "${qlik_data_movement_gateway_image}:${qlik_data_movement_gateway_tag}"
 
   if [ $# -gt 0 ]; then
     qlik_data_movement_gateway "${@}"

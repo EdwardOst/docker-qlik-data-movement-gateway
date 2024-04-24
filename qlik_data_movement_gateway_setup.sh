@@ -9,6 +9,8 @@ source "${qlik_data_movement_gateway_script_dir}/qlik_data_movement_gateway_conf
 
 qlik_data_movement_gateway_setup() {
 
+  printf "setup:\n"
+
   docker pull "${qlik_data_movement_gateway_image}/${qlik_data_movement_gateway_tag}"
 
   docker volume create "${qlik_data_movement_gateway_volume}"
@@ -24,20 +26,9 @@ qlik_data_movement_gateway_setup() {
   fi
 
   if [ $# -gt 0 ]; then
-    local result=0
-    case $1 in
-      config | download | build | setup | shell | server | start | stop)
-        set -- qlik_data_movement_gateway_"$1" "${@:2}"
-        "$@"
-        result=$?
-      ;;
-      *)
-        docker exec "${qlik_data_movement_gateway_container_name}" "${@}"
-        result=1
-    esac
-    return ${result}
+    qlik_data_movement_gateway "${@}"
+    return $?
   else
     return 0
   fi
-
 }

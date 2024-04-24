@@ -10,6 +10,8 @@ qlik_data_movement_gateway_script_dir="${qlik_data_movement_gateway_script_path%
 
 qlik_data_movement_gateway_config() {
 
+  printf "config:\n"
+
   local output_file=""
   case "${1}" in
     -o|--output)
@@ -88,21 +90,24 @@ qlik_tenant="${qlik_tenant}"
 EOF
   fi
 
+  # shellcheck disable=SC2034
+  local -r qlik_data_movement_gateway_config_called=true
+  while [ $# -gt 0 ] && [ "$1" = "config" ]; do
+    shift 1
+  done
   if [ $# -gt 0 ]; then
     local result=0
     case $1 in
-      config | download | build | setup | shell | server | start | stop)
-        set -- qlik_data_movement_gateway_"$1" "${@:2}"
+      download | setup | build | init | registration | start | stop | shell | service)
+        set -- "qlik_data_movement_gateway_$1" "${@:2}"
         "$@"
         result=$?
       ;;
       *)
         docker exec "${qlik_data_movement_gateway_container_name}" "${@}"
-        result=1
+        result=$?
     esac
     return ${result}
-  else
-    return 0
   fi
 
 }

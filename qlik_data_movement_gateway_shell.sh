@@ -9,23 +9,10 @@ source "${qlik_data_movement_gateway_script_dir}/qlik_data_movement_gateway_conf
 
 qlik_data_movement_gateway_shell() {
 
+  printf "shell:\n"
+
   docker exec -it "${qlik_data_movement_gateway_container_name}" /bin/bash
 
-  if [ $# -gt 0 ]; then
-    local result=0
-    case $1 in
-      config | download | build | setup | shell | server | start | stop)
-        set -- qlik_data_movement_gateway_"$1" "${@:2}"
-        "$@"
-        result=$?
-      ;;
-      *)
-        docker exec "${qlik_data_movement_gateway_container_name}" "${@}"
-        result=1
-    esac
-    return ${result}
-  else
-    return 0
-  fi
+  return $?
 
 }
