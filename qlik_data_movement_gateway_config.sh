@@ -50,12 +50,8 @@ qlik_data_movement_gateway_config() {
   local -r qlik_data_movement_gateway_tag="${qlik_data_movement_gateway_tag:-${qlik_data_movement_gateway_package_version}}"
 
   # image and tag of base image from which gateway image will be derived
-# ubuntu
-#  local -r qlik_data_movement_gateway_base_image="${qlik_data_movement_gateway_base_image-edwardost/ubuntu}"
-#  local -r qlik_data_movement_gateway_base_tag="${qlik_data_movement_gateway_base_tag:-22.04}"
-# redhat
-  local -r qlik_data_movement_gateway_base_image="${qlik_data_movement_gateway_base_image:-edwardost/ubi8-minimal}"
-  local -r qlik_data_movement_gateway_base_tag="${qlik_data_movement_gateway_base_tag:-8.9-1161}"
+  local -r qlik_data_movement_gateway_base_image="${qlik_data_movement_gateway_base_image:-edwardost/ubi8}"
+  local -r qlik_data_movement_gateway_base_tag="${qlik_data_movement_gateway_base_tag:-8.9-1160}"
 
   # CONTAINER CONFIGURATION
 
@@ -95,13 +91,13 @@ EOF
   if [ $# -gt 0 ]; then
     local result=0
     case $1 in
-      config | download | build | setup | run | server)
+      config | download | build | setup | shell | server | start | stop)
         set -- qlik_data_movement_gateway_"$1" "${@:2}"
         "$@"
         result=$?
       ;;
       *)
-        printf "unknown subcommand(s): %s\n" "${*}"
+        docker exec "${qlik_data_movement_gateway_container_name}" "${@}"
         result=1
     esac
     return ${result}

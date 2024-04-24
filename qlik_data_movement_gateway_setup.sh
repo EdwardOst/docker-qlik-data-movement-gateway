@@ -26,13 +26,13 @@ qlik_data_movement_gateway_setup() {
   if [ $# -gt 0 ]; then
     local result=0
     case $1 in
-      config | download | build | setup | run | server)
+      config | download | build | setup | shell | server | start | stop)
         set -- qlik_data_movement_gateway_"$1" "${@:2}"
         "$@"
         result=$?
       ;;
       *)
-        printf "unknown subcommand(s): %s\n" "${*}"
+        docker exec "${qlik_data_movement_gateway_container_name}" "${@}"
         result=1
     esac
     return ${result}

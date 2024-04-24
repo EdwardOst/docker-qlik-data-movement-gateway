@@ -7,11 +7,9 @@ qlik_data_movement_gateway_script_dir="${qlik_data_movement_gateway_script_path%
 source "${qlik_data_movement_gateway_script_dir}/qlik_data_movement_gateway_config.sh"
 
 
-qlik_data_movement_gateway_server() {
+qlik_data_movement_gateway_shell() {
 
-  docker run -d --init --name "${qlik_data_movement_gateway_container_name}" "${qlik_data_movement_gateway_image}:${qlik_data_movement_gateway_tag}"
-
-#  docker exec "${qlik_data_movement_gateway_container_name}" "/root/${qlik_package_version}/opt/qlik/gateway/movement/bin/agentctl qcs get_registration"
+  docker exec -it "${qlik_data_movement_gateway_container_name}" /bin/bash
 
   if [ $# -gt 0 ]; then
     local result=0

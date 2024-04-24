@@ -8,8 +8,6 @@ qlik_data_movement_gateway_script_dir="${qlik_data_movement_gateway_script_path%
 source "${qlik_data_movement_gateway_script_dir}/qlik_data_movement_gateway_config.sh"
 
 qlik_data_movement_gateway_download() {
-  set -x
-
   local token
   case "${1}" in
     -t=*|--token=*)
@@ -20,20 +18,20 @@ qlik_data_movement_gateway_download() {
   local -r github_token="${token:-${github_token}}"
   [ -z "${github_token}" ] && qlik_data_movement_gateway_download_usage && return 1
 
-  local -r download_url=$(curl -s -H "Authorization: Bearer ${github_token}" "https://api.github.com/repos/${qlik_data_movement_gateway_organization}/${qlik_data_movement_gateway_repo}/contents/${qlik_data_movement_gateway_package}" | jq -r ".download_url" )
+  local -r download_url=$(curl -s -H "Authorization: Bearer ${github_token}" "https://api.github.com/repos/${qlik_data_movement_gateway_organization}/${qlik_data_movement_gateway_repo}/contents/releases/${qlik_data_movement_gateway_package_version}/${qlik_data_movement_gateway_package}" | jq -r ".download_url" )
   echo "download_url=${download_url}"
-#  curl -sLJ -o "${qlik_data_movement_gateway_package}" -H "Authorization: Bearer ${github_token}" "${download_url}"
+  curl -sLJ -o "${qlik_data_movement_gateway_package}" -H "Authorization: Bearer ${github_token}" "${download_url}"
 
   if [ $# -gt 0 ]; then
     local result=0
     case $1 in
-      config | download | build | setup | run | server)
+      config | download | build | setup | shell | server | start | stop)
         set -- qlik_data_movement_gateway_"$1" "${@:2}"
         "$@"
         result=$?
       ;;
       *)
-        printf "unknown subcommand(s): %s\n" "${*}"
+        docker exec "${qlik_data_movement_gateway_container_name}" "${@}"
         result=1
     esac
     return ${result}
