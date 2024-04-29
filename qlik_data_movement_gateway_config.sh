@@ -47,10 +47,13 @@ qlik_data_movement_gateway_config() {
   local -r qlik_data_movement_gateway_image="${qlik_data_movement_gateway_image:-${qlik_data_movement_gateway_operator}/qlik-data-movement-gateway}"
   local -r qlik_data_movement_gateway_tag="${qlik_data_movement_gateway_tag:-${qlik_data_movement_gateway_package_version}}"
 
-  # base image and tag from which gateway image will be derived
+  # base image and tag
   local -r qlik_data_movement_gateway_base_image="${qlik_data_movement_gateway_base_image:-${qlik_data_movement_gateway_operator}/ubi8-minimal}"
 #  local -r qlik_data_movement_gateway_base_image="${qlik_data_movement_gateway_base_image:-redhat/ubi8-minimal}"
   local -r qlik_data_movement_gateway_base_tag="${qlik_data_movement_gateway_base_tag:-8.9-1161}"
+
+  local -r qlik_data_movement_gateway_user="${qlik_data_movement_gateway_user:-qlik}"
+  local -r qlik_data_movement_gateway_password="${qlik_data_movement_gateway_password:-qlik123}"
 
   # CONTAINER CONFIGURATION
 

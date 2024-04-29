@@ -20,11 +20,11 @@ Source the `qlik-data-movement-gateway-init` script and the commands below will 
 |  **build**                          | Create a qlik data movement gateway image.                                                      |
 |  **setup**                          | Pulls necessary docker images and creates data volumes and docker networks.                     |
 |  **init**                           | Start a qlik data movement gateway container for the first.                                     |
-|  **registration **                  | Print out the registration key for a gateway container.                                         |
+|  **registration**                   | Print out the registration key for a gateway container.                                         |
 |  **start**                          | Start the gateway container.                                                                    |
 |  **stop**                           | Stop the gateway container.                                                                     |
-|  **start**                          | Start the gateway service in an existing qlik data movement gateway container.                  |
-|  **stop**                           | Stop the gateway service in an existing qlik data movement gateway container.                   |
+|  **service start**                  | Start the gateway service in an existing qlik data movement gateway container.                  |
+|  **service stop**                   | Stop the gateway service in an existing qlik data movement gateway container.                   |
 |  **config**                         | Common configuration context for all commands captured as local function variables. Invoked by prior to other commands. |
 
 

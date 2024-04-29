@@ -19,12 +19,14 @@ function qlik_data_movement_gateway_build() {
 #  local -r qlik_data_movement_gateway_version=$(rpm -q --queryformat='%{VERSION}.%{RELEASE}' qlik-data-gateway-data-movement.rpm 2>/dev/null)
 #  printf "Qlik Data Movement Gateway Version: %s\n" "${qlik_data_movement_gateway_version}"
 
-  docker build -t "${qlik_data_movement_gateway_image}:${qlik_data_movement_gateway_tag}"  \
+  docker build --no-cache -t "${qlik_data_movement_gateway_image}:${qlik_data_movement_gateway_tag}"  \
     --build-arg base_image="${qlik_data_movement_gateway_base_image}" \
     --build-arg base_tag="${qlik_data_movement_gateway_base_tag}" \
     --build-arg qlik_package="${qlik_data_movement_gateway_package}" \
     --build-arg qlik_package_version="${qlik_data_movement_gateway_package_version}" \
     --build-arg qlik_package_platform="${qlik_data_movement_gateway_package_platform}" \
+    --build-arg user="${qlik_data_movement_gateway_user}" \
+    --build-arg password="${qlik_data_movement_gateway_password}" \
     --build-arg dnf_command="${qlik_data_movement_gateway_dnf_command}" \
     --build-arg qlik_tenant="${qlik_tenant}" .
 
