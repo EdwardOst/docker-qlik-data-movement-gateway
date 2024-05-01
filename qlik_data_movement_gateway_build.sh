@@ -28,7 +28,7 @@ function qlik_data_movement_gateway_build() {
     --build-arg user="${qlik_data_movement_gateway_user}" \
     --build-arg password="${qlik_data_movement_gateway_password}" \
     --build-arg dnf_command="${qlik_data_movement_gateway_dnf_command}" \
-    --build-arg qlik_tenant="${qlik_tenant}" .
+    --build-arg qlik_tenant="${qlik_data_movement_gateway_tenant}" -f "${qlik_data_movement_gateway_dockerfile}" .
 
   declare -r build_status=$?
 

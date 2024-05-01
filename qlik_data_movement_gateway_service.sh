@@ -51,11 +51,12 @@ qlik_data_movement_gateway_registration() {
   printf "registration:\n"
 
   # shellcheck disable=SC2088
-  docker exec "${qlik_data_movement_gateway_container_name}" cat "/home/${user}/registration.txt"
+  docker exec "${qlik_data_movement_gateway_container_name}" cat "/home/${qlik_data_movement_gateway_user}/registration.txt"
   local result=$?
 
   if [ ! ${result} = 0 ]; then
-    printf "registration: ERROR: error executing command: %s\n"  "docker exec \"${qlik_data_movement_gateway_container_name}\" cat \"/root/registration.txt\""
+    printf "registration: ERROR: error executing command: %s\n" \
+      "docker exec \"${qlik_data_movement_gateway_container_name}\" cat \"/home/${qlik_data_movement_gateway_user}/registration.txt\""
     return ${result}
   fi
 

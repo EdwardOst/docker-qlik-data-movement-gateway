@@ -22,10 +22,8 @@ FROM ${base_image}:${base_tag}
   RUN \
     sudo mkdir -p /opt/qlik \ 
     && sudo chown qlik:qlik /opt/qlik \
-    && sudo ${dnf_command} install -y cpio \
-    && rpm2cpio "${qlik_package}" | cpio -idmv -D / \
+    && sudo QLIK_CUSTOMER_AGREEMENT_ACCEPT=yes QLIK_DMG_NO_SYSTEMD=true rpm -ivh "${qlik_package}" \
     && cd /opt/qlik/gateway/movement/bin \
-    && ./agentctl qcs set_config --tenant_url ${qlik_tenant}.us.qlikcloud.com \
-    && iport=3550 rport=3552 verbose=true systemd_disabled=1 ./arep.sh install repagent
+    && ./agentctl qcs set_config --tenant_url ${qlik_tenant}.us.qlikcloud.com
 
   CMD [ "/home/qlik/repagent_start.sh" ]

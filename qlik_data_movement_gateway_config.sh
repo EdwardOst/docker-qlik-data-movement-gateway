@@ -43,6 +43,8 @@ qlik_data_movement_gateway_config() {
 
   # IMAGE CONFIGURATION
 
+  local -r qlik_data_movement_gateway_dockerfile="${qlik_data_movement_gateway_dockerfile:-dockerfile}"
+
   # gateway image and tag
   local -r qlik_data_movement_gateway_image="${qlik_data_movement_gateway_image:-${qlik_data_movement_gateway_operator}/qlik-data-movement-gateway}"
   local -r qlik_data_movement_gateway_tag="${qlik_data_movement_gateway_tag:-${qlik_data_movement_gateway_package_version}}"
@@ -69,24 +71,29 @@ qlik_data_movement_gateway_config() {
   # APPLICATION CONFIGURATION
 
   # qlik cloud tenant
-  local -r qlik_tenant="${qlik_tenant:-obd}"
+  local -r qlik_data_movement_gateway_tenant="${qlik_data_movement_gateway_tenant:-obd}"
 
 
   if [ -n "${output_file}" ]; then
     cat > "${output_file}"  <<EOF
-qlik_data_movement_gateway_organization="${qlik_data_movement_gateway_organization}"
-qlik_data_movement_gateway_repo="${qlik_data_movement_gateway_repo}"
-qlik_data_movement_gateway_package_version="${qlik_data_movement_gateway_package_version}"
-qlik_data_movement_gateway_package_platform="${qlik_data_movement_gateway_package_platform}"
-qlik_data_movement_gateway_package="${qlik_data_movement_gateway_package}"
 qlik_data_movement_gateway_image="${qlik_data_movement_gateway_image}"
 qlik_data_movement_gateway_tag="${qlik_data_movement_gateway_tag}"
 qlik_data_movement_gateway_base_image="${qlik_data_movement_gateway_base_image}"
 qlik_data_movement_gateway_base_tag="${qlik_data_movement_gateway_base_tag}"
+qlik_data_movement_gateway_dockerfile="${qlik_data_movement_gateway_dockerfile}"
+qlik_data_movement_gateway_tenant="${qlik_data_movement_gateway_tenant}"
+
+qlik_data_movement_gateway_organization="${qlik_data_movement_gateway_organization}"
+qlik_data_movement_gateway_repo="${qlik_data_movement_gateway_repo}"
+qlik_data_movement_gateway_operator="${qlik_data_movement_gateway_operator}"
+qlik_data_movement_gateway_package_version="${qlik_data_movement_gateway_package_version}"
+qlik_data_movement_gateway_package_platform="${qlik_data_movement_gateway_package_platform}"
+qlik_data_movement_gateway_package="${qlik_data_movement_gateway_package}"
+qlik_data_movement_gateway_user="${qlik_data_movement_gateway_user}"
+qlik_data_movement_gateway_dnf_command="${qlik_data_movement_gateway_dnf_command}"
 qlik_data_movement_gateway_container_name="${qlik_data_movement_gateway_container_name}"
 qlik_data_movement_gateway_volume="${qlik_data_movement_gateway_volume}"
 qlik_data_movement_gateway_network="${qlik_data_movement_gateway_network}"
-qlik_tenant="${qlik_tenant}"
 EOF
   fi
 
