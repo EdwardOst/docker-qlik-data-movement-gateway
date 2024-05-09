@@ -1,0 +1,32 @@
+# syntax=docker/dockerfile:1
+ARG base_image=edwardost/ubi8-init
+ARG base_tag=8.9-7
+ARG dnf_command=dnf
+ARG user=qlik
+ARG qlik_tenant=obd
+
+FROM ${base_image}:${base_tag}
+
+  ARG qlik_package=qlik-data-gateway-data-movement_2023.11-4_x86_64.rpm
+  ARG qlik_package_version=2023.11-4
+  ARG qlik_package_platform=x86_64
+  ARG user
+  ARG dnf_command
+  ARG qlik_tenant
+
+  ENV QLIK_TENANT=${qlik_tenant}
+  ENV QLIK_PACKAGE=${qlik_package}
+
+  LABEL maintainer="eost@qlik.com"
+  LABEL qlik_package_version="${qlik_package_version}"
+  LABEL qlik_package_platform="${qlik_package_platform}"
+  LABEL qlik_tenant="${qlik_tenant}"
+
+  WORKDIR /root
+
+  RUN ${dnf_command} install -y python3
+
+  ADD "${qlik_package}" "${qlik_package}"
+  COPY --chmod=740 init-start.sh "./"
+
+#  CMD [ "/root/init-start.sh" ]

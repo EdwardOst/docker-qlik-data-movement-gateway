@@ -39,7 +39,7 @@ qlik_data_movement_gateway_config() {
   local -r qlik_data_movement_gateway_package_platform="${qlik_data_movement_gateway_package_platform:-x86_64}"
   local -r qlik_data_movement_gateway_package="${qlik_data_movement_gateway_package:-qlik-data-gateway-data-movement_${qlik_data_movement_gateway_package_version}_${qlik_data_movement_gateway_package_platform}.rpm}"
 
-  local -r qlik_data_movement_gateway_dnf_command="${qlik_data_movement_gateway_dnf_command:-microdnf}"
+  local -r qlik_data_movement_gateway_dnf_command="${qlik_data_movement_gateway_dnf_command:-dnf}"
 
   # IMAGE CONFIGURATION
 
@@ -51,8 +51,11 @@ qlik_data_movement_gateway_config() {
 
   # base image and tag
   local -r qlik_data_movement_gateway_base_image="${qlik_data_movement_gateway_base_image:-${qlik_data_movement_gateway_operator}/ubi8-minimal}"
-#  local -r qlik_data_movement_gateway_base_image="${qlik_data_movement_gateway_base_image:-redhat/ubi8-minimal}"
   local -r qlik_data_movement_gateway_base_tag="${qlik_data_movement_gateway_base_tag:-8.9-1161}"
+
+  # builder image and tag
+  local -r qlik_data_movement_gateway_builder_image="${qlik_data_movement_gateway_builder_image:-${qlik_data_movement_gateway_operator}/ubi8}"
+  local -r qlik_data_movement_gateway_builder_tag="${qlik_data_movement_gateway_builder_tag:-8.9-1160}"
 
   local -r qlik_data_movement_gateway_user="${qlik_data_movement_gateway_user:-qlik}"
   local -r qlik_data_movement_gateway_password="${qlik_data_movement_gateway_password:-qlik123}"
@@ -80,6 +83,8 @@ qlik_data_movement_gateway_image="${qlik_data_movement_gateway_image}"
 qlik_data_movement_gateway_tag="${qlik_data_movement_gateway_tag}"
 qlik_data_movement_gateway_base_image="${qlik_data_movement_gateway_base_image}"
 qlik_data_movement_gateway_base_tag="${qlik_data_movement_gateway_base_tag}"
+qlik_data_movement_gateway_builder_image="${qlik_data_movement_gateway_builder_image}"
+qlik_data_movement_gateway_builder_tag="${qlik_data_movement_gateway_builder_tag}"
 qlik_data_movement_gateway_dockerfile="${qlik_data_movement_gateway_dockerfile}"
 qlik_data_movement_gateway_tenant="${qlik_data_movement_gateway_tenant}"
 

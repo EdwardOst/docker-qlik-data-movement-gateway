@@ -24,6 +24,11 @@ qlik_data_movement_gateway_service() {
         docker exec "${qlik_data_movement_gateway_container_name}" /opt/qlik/gateway/movement/bin/repagent stop
         result=$?
         ;;
+      status)
+        shift 1
+        docker exec "${qlik_data_movement_gateway_container_name}" /opt/qlik/gateway/movement/bin/repagent status
+        result=$?
+        ;;
       *)
         printf "Usage: qlik_data_movement_gateway service < start | stop > ...\nService subcommand is required and must be either 'start' or 'stop'.\n"
         result=1

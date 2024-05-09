@@ -11,7 +11,7 @@ qlik_data_movement_gateway_init() {
 
   printf "init:\n"
 
-  docker run -d --init --name "${qlik_data_movement_gateway_container_name}" "${qlik_data_movement_gateway_image}:${qlik_data_movement_gateway_tag}"
+  docker run -d --init --network "${qlik_data_movement_gateway_network}" --name "${qlik_data_movement_gateway_container_name}" "${qlik_data_movement_gateway_image}:${qlik_data_movement_gateway_tag}"
   # allow time so that registration and other exec commands will work against container
   sleep 3
 

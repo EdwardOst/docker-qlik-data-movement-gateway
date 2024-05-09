@@ -25,7 +25,8 @@ Source the `qlik-data-movement-gateway-init` script and the commands below will 
 |  **stop**                           | Stop the gateway container.                                                                     |
 |  **service start**                  | Start the gateway service in an existing qlik data movement gateway container.                  |
 |  **service stop**                   | Stop the gateway service in an existing qlik data movement gateway container.                   |
-|  **config**                         | Common configuration context for all commands captured as local function variables. Invoked by prior to other commands. |
+|  **service status**                 | Display gateway service status.                                                                 |
+|  config                             | Common configuration context for all commands captured as local function variables.             |
 
 
 ## Usage
