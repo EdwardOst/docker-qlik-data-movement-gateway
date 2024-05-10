@@ -2,8 +2,8 @@
 
 ARG base_image=edwardost/ubi8
 ARG base_tag=8.9-1160
-ARG qlik_user=qlik
 ARG qlik_tenant=obd
+ARG qlik_user=qlik
 
 FROM ${base_image}:${base_tag} AS gateway_instance
 
@@ -30,15 +30,10 @@ FROM ${base_image}:${base_tag} AS gateway_instance
   COPY --chmod=740 --chown=${qlik_user}:${qlik_user} repagent-start.sh "./"
 
   RUN \
-    sudo ${dnf_command} install -y cpio \
-    && sudo ${dnf_command} install -y python3 \
-    && sudo mkdir -p /opt/qlik \ 
-    && sudo chown "${qlik_user}:${qlik_user}" /opt/qlik \
-    && rpm2cpio "${qlik_package}" | cpio -idmv -D / \
+    sudo ${dnf_command} install -y python3 \
+    && sudo QLIK_CUSTOMER_AGREEMENT_ACCEPT=yes QLIK_DMG_NO_SYSTEMD=yes rpm -ivh "${qlik_package}" \
     && cd /opt/qlik/gateway/movement/bin \
-    && ./agentctl qcs set_config --tenant_url "${qlik_tenant}.us.qlikcloud.com" \
-    && echo "# enter site specific settings here" > /opt/qlik/gateway/movement/bin/site_arep_login.sh \
-    && iport=3550 rport=3552 verbose=true tenant_url="${tenant_url}" systemd_disabled=1 ./arep.sh install repagent \
+    && sudo ./agentctl qcs set_config --tenant_url "${qlik_tenant}.us.qlikcloud.com" \
     && cd /opt/qlik/gateway/movement/drivers/bin \
     && sudo ./install mysql -a \
     && sudo ./install postgres -a \

@@ -43,19 +43,50 @@ qlik_data_movement_gateway_config() {
 
   # IMAGE CONFIGURATION
 
-  local -r qlik_data_movement_gateway_dockerfile="${qlik_data_movement_gateway_dockerfile:-dockerfile}"
+  # gateway_type must be one of [ instance | instance-rpm | instance-minimal | service ]
+  # instance gateways do not use systemctl and run in an image derived ubi8-standard
+  # service gateways use systemctl and run in an image derived from ubi8-init
+  local -r qlik_data_movement_gateway_type="${qlik_data_movement_gateway_type:-instance}"
+  if [ ! "${qlik_data_movement_gateway_type}" = "instance" ] \
+     && [ ! "${qlik_data_movement_gateway_type}" = "instance-rpm" ] \
+     && [ ! "${qlik_data_movement_gateway_type}" = "instance-minimal" ] \
+     && [ ! "${qlik_data_movement_gateway_type}" = "service" ]; then
+    printf "  ERROR: Invalid gateway type.  Gateway type must be one of [ instance | service ] but qlik_data_movement_gateway_type=%s\n" "${qlik_data_movement_gateway_type}"
+    return 1
+  fi
+
+  local -A qlik_data_movement_gateway_type_dockerfile=([instance]="dockerfile" \
+                                                       [instance-rpm]="dockerfile-rpm" \
+                                                       [service]="dockerfile-init")
+  local -A qlik_data_movement_gateway_type_build_target=([instance]="gateway_instance" \
+                                                         [instance-rpm]="gateway_instance" \
+                                                         [service]="gateway_service")
+  local -A qlik_data_movement_gateway_type_image=([instance]="${qlik_data_movement_gateway_operator}/qlik-data-movement-gateway" \
+                                                  [instance-rpm]="${qlik_data_movement_gateway_operator}/qlik-data-movement-gateway-rpm" \
+                                                  [service]="${qlik_data_movement_gateway_operator}/qlik-data-movement-gateway-init")
+
+  local -A qlik_data_movement_gateway_type_base_image=([instance]="${qlik_data_movement_gateway_operator}/ubi8" \
+                                                       [instance-rpm]="${qlik_data_movement_gateway_operator}/ubi8" \
+                                                       [service]="${qlik_data_movement_gateway_operator}/ubi8-init")
+  local -A qlik_data_movement_gateway_type_base_tag=([instance]="8.9-1160" \
+                                                     [instance-rpm]="8.9-1160" \
+                                                     [service]="8.9-7")
 
   # gateway image and tag
-  local -r qlik_data_movement_gateway_image="${qlik_data_movement_gateway_image:-${qlik_data_movement_gateway_operator}/qlik-data-movement-gateway}"
+  local -r qlik_data_movement_gateway_image="${qlik_data_movement_gateway_image:-${qlik_data_movement_gateway_type_image[${qlik_data_movement_gateway_type}]}}"
   local -r qlik_data_movement_gateway_tag="${qlik_data_movement_gateway_tag:-${qlik_data_movement_gateway_package_version}}"
 
   # base image and tag
-  local -r qlik_data_movement_gateway_base_image="${qlik_data_movement_gateway_base_image:-${qlik_data_movement_gateway_operator}/ubi8-minimal}"
-  local -r qlik_data_movement_gateway_base_tag="${qlik_data_movement_gateway_base_tag:-8.9-1161}"
+  local -r qlik_data_movement_gateway_base_image="${qlik_data_movement_gateway_base_image:-${qlik_data_movement_gateway_type_base_image[${qlik_data_movement_gateway_type}]}}"
+  local -r qlik_data_movement_gateway_base_tag="${qlik_data_movement_gateway_base_tag:-${qlik_data_movement_gateway_type_base_tag[${qlik_data_movement_gateway_type}]}}"
 
   # builder image and tag
   local -r qlik_data_movement_gateway_builder_image="${qlik_data_movement_gateway_builder_image:-${qlik_data_movement_gateway_operator}/ubi8}"
   local -r qlik_data_movement_gateway_builder_tag="${qlik_data_movement_gateway_builder_tag:-8.9-1160}"
+
+  # dockerfile and stage target
+  local -r qlik_data_movement_gateway_dockerfile="${qlik_data_movement_gateway_dockerfile:-${qlik_data_movement_gateway_type_dockerfile[${qlik_data_movement_gateway_type}]}}"
+  local -r qlik_data_movement_gateway_build_target="${qlik_data_movement_gateway_build_target:-${qlik_data_movement_gateway_type_build_target[${qlik_data_movement_gateway_type}]}}"
 
   local -r qlik_data_movement_gateway_user="${qlik_data_movement_gateway_user:-qlik}"
   local -r qlik_data_movement_gateway_password="${qlik_data_movement_gateway_password:-qlik123}"
@@ -69,7 +100,7 @@ qlik_data_movement_gateway_config() {
   local -r qlik_data_movement_gateway_volume="${qlik_data_movement_gateway_volume:-qlik-data-movement-gateway-data}"
 
   # network on which gateway container will be deployed
-  local -r qlik_data_movement_gateway_network="${qlik_data_movement_gateway_network:-qlik-data-movement-gateway-network}"
+  local -r qlik_data_movement_gateway_network="${qlik_data_movement_gateway_network:-qmi_default}"
 
   # APPLICATION CONFIGURATION
 
@@ -79,13 +110,17 @@ qlik_data_movement_gateway_config() {
 
   if [ -n "${output_file}" ]; then
     cat > "${output_file}"  <<EOF
+qlik_data_movement_gateway_type="${qlik_data_movement_gateway_type}"
+qlik_data_movement_gateway_dockerfile="${qlik_data_movement_gateway_dockerfile}"
+
 qlik_data_movement_gateway_image="${qlik_data_movement_gateway_image}"
 qlik_data_movement_gateway_tag="${qlik_data_movement_gateway_tag}"
 qlik_data_movement_gateway_base_image="${qlik_data_movement_gateway_base_image}"
 qlik_data_movement_gateway_base_tag="${qlik_data_movement_gateway_base_tag}"
 qlik_data_movement_gateway_builder_image="${qlik_data_movement_gateway_builder_image}"
 qlik_data_movement_gateway_builder_tag="${qlik_data_movement_gateway_builder_tag}"
-qlik_data_movement_gateway_dockerfile="${qlik_data_movement_gateway_dockerfile}"
+
+qlik_data_movement_gateway_build_target="${qlik_data_movement_gateway_build_target}"
 qlik_data_movement_gateway_tenant="${qlik_data_movement_gateway_tenant}"
 
 qlik_data_movement_gateway_organization="${qlik_data_movement_gateway_organization}"
