@@ -26,6 +26,8 @@ FROM ${base_image}:${base_tag} AS gateway_instance
   ENV QLIK_PACKAGE_VERSION=${qlik_package_version}
   ENV QLIK_PACKAGE_PLATFORM=${qlik_package_platform}
 
+  EXPOSE 3552/tcp
+
   ADD --chown=${qlik_user}:${qlik_user} "${qlik_package}" "${qlik_package}"
   COPY --chmod=740 --chown=${qlik_user}:${qlik_user} repagent-start.sh "./"
 

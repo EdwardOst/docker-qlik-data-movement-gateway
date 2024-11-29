@@ -22,6 +22,8 @@ FROM ${base_image}:${base_tag} AS gateway_service
   LABEL qlik_package_platform="${qlik_package_platform}"
   LABEL qlik_tenant="${qlik_tenant}"
 
+  EXPOSE 3552/tcp
+
   WORKDIR /root
 
   RUN ${dnf_command} install -y python3

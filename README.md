@@ -5,6 +5,7 @@ Scripts for building and running Qlik Data Movement Gateway as a container.
 * [Commands](#commands)
 * [Usage](#usage)
 * [Install](#install)
+* [Configuration](#configuration)
 * [Design](#design)
 * [Examples](#examples)
 
@@ -131,7 +132,7 @@ root       203   199 99 14:19 ?        00:00:57 ../jvm/bin/java -jar /opt/qlik/g
 root       323     0  0 14:20 ?        00:00:00 ps -ef
 ````
 
-### Installing with dDifferent RPM Download
+### Installing with Different RPM Download
 
 If you prefer to download the gateway rpm directly you can use the customization methods described in the [design](#design) section below to
 override the rpm config settings.  You can determine the platform, version, and release of the rpm by using the `rpm -qi` command.  Concatenate
@@ -190,6 +191,21 @@ Since it uses the standard image a different package manager is needed.
 In this case the ubi8 standard image includes the `procps` package already.
 If your base image does not include the `procps` or other packages, consider creating an intermediate image with the relevant packages installed
 and refer to that as shown above.
+
+
+## Configuration
+
+`qlik_data_movement_gateway_host_replicate_port`
+
+The QCDI data movement gateway runs a headless Replicate server.  The Replicate web ui is exposed on 3552 by default (rport)
+within the container.  This setting determines the host port on which it rport is exposed.  It defaults to 3552. It can mapped
+to a different port by just overriding with a valid value.  If set to "dynamic" then a host port will be dynamically selected
+and the container must be inspected to determine the value.  If set to "disabled" the port will not be mapped to a host port.
+The url for the Replicate web ui is https://localhost:3552/attunityreplicate.  The default userid is "admin" and the default
+password is "attunityreplicate".  So the full default url including auth would be
+
+    https://admin:Qlik_replicate_123@localhost:3552/attunityreplicate
+
 
 ## Design
 

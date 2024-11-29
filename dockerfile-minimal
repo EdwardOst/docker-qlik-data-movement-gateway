@@ -1,0 +1,109 @@
+# syntax=docker/dockerfile:1
+
+ARG base_image=edwardost/ubi8
+ARG base_tag=8.9-1160
+ARG qlik_tenant=obd
+ARG qlik_user=qlik
+
+FROM ${base_image}:${base_tag} AS gateway_instance
+
+  ARG dnf_command
+  ARG qlik_user
+  ARG qlik_tenant
+
+  ARG qlik_package=qlik-data-gateway-data-movement_2023.11-4_x86_64.rpm
+  ARG qlik_package_version=2023.11-4
+  ARG qlik_package_platform=x86_64
+
+  ARG dnf_command=microdnf
+  ARG mysql_odbc_url=https://dev.mysql.com/get/Downloads/Connector-ODBC/8.0/mysql-connector-odbc-8.0.32-1.el8.x86_64.rpm
+  ARG mysql_jdbc_url=https://repo1.maven.org/maven2/com/mysql/mysql-connector-j/8.0.33/mysql-connector-j-8.0.33.jar
+
+  ARG snowflake_odbc_url=https://sfc-repo.snowflakecomputing.com/odbc/linux/3.1.1/snowflake-odbc-3.1.1.x86_64.rpm
+  ARG snowflake_jdbc_url=https://repo1.maven.org/maven2/net/snowflake/snowflake-jdbc/3.14.5/snowflake-jdbc-3.14.5.jar
+
+  ARG postgres_lib_url=https://download.postgresql.org/pub/repos/yum/13/redhat/rhel-8-x86_64/postgresql13-libs-13.0-1PGDG.rhel8.x86_64.rpm
+  ARG postgres_base_url=https://download.postgresql.org/pub/repos/yum/13/redhat/rhel-8-x86_64/postgresql13-13.0-1PGDG.rhel8.x86_64.rpm
+  ARG postgres_odbc_url=https://download.postgresql.org/pub/repos/yum/13/redhat/rhel-8-x86_64/postgresql13-odbc-13.02.0000-1PGDG.rhel8.x86_64.rpm
+  ARG postgres_jdbc_url=https://jdbc.postgresql.org/download/postgresql-42.6.0.jar
+
+
+  LABEL maintainer="eost@qlik.com"
+  LABEL qlik_package_version="${qlik_package_version}"
+  LABEL qlik_package_platform="${qlik_package_platform}"
+  LABEL qlik_tenant="${qlik_tenant}"
+
+  ENV QLIK_TENANT=${qlik_tenant}
+  ENV QLIK_PACKAGE_VERSION=${qlik_package_version}
+  ENV QLIK_PACKAGE_PLATFORM=${qlik_package_platform}
+
+  EXPOSE 3552/tcp
+
+  ADD --chown=${qlik_user}:${qlik_user} "${qlik_package}" "${qlik_package}"
+  COPY --chmod=740 --chown=${qlik_user}:${qlik_user} repagent-start.sh "./"
+
+  RUN \
+    sudo QLIK_CUSTOMER_AGREEMENT_ACCEPT=yes QLIK_DMG_NO_SYSTEMD=yes rpm -ivh "${qlik_package}" \
+    && cd /opt/qlik/gateway/movement/bin \
+    && sudo ./agentctl qcs set_config --tenant_url "${qlik_tenant}.us.qlikcloud.com"
+
+# install mysql driver
+  RUN \
+# required by both mysql and snowflake
+    sudo microdnf install -y libtool-ltdl unixODBC \
+# install mysql drivers
+    && cd ~ \
+    && curl -LO "${mysql_odbc_url}" \
+    && mysql_rpm=$( basename "${mysql_odbc_url}" ) \
+    && sudo rpm -ivh "${mysql_rpm}" \
+    && cd /opt/qlik/gateway/movement/qcs_agents/qdi-db-commands/lib \
+    && curl -LO "${mysql_jdbc_url}" \
+# install snowflake drivers
+    && cd ~ \
+    && curl -LO "${snowflake_odbc_url}" \
+    && snowflake_rpm=$( basename "${snowflake_odbc_url}" ) \
+    && sudo rpm -ivh "${snowflake_rpm}" \
+    && cd /opt/qlik/gateway/movement/qcs_agents/qdi-db-commands/lib \
+    && curl -LO "${snowflake_jdbc_url}" \
+# install postgress drivers
+    && cd ~ \
+    && curl -LO "${postgres_lib_url}" \
+    && postgres_lib_rpm=$( basename "${postgres_lib_url}" ) \
+    && sudo rpm -ivh "${postsgres_lib_rpm}" \
+    && curl -LO "${postgres_base_url}" \
+    && postgres_base_rpm=$( basename "${postgres_base_url}" ) \
+    && sudo rpm -ivh "${postsgres_base_rpm}" \
+    && curl -LO "${postgres_odbc_url}" \
+    && postgres_odbc_rpm=$( basename "${postgres_odbc_url}" ) \
+    && sudo rpm -ivh "${postsgres_odbc_rpm}" \
+    && cd /opt/qlik/gateway/movement/qcs_agents/qdi-db-commands/lib \
+    && curl -LO "${postgres_jdbc_url}" \
+# add drivers LD_LIBRARY_PATH
+    && echo "export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:/usr/lib:/usr/lib64:/usr/pgsql-<version>/lib" >> site_arep_login.sh
+
+# copy these files for multi-stage build
+# mysql
+#    Setup64=/usr/lib64/libodbcmyS.so
+#    Driver=/usr/lib64/libmyodbc8w.so
+#    Driver=/usr/lib64/libmyodbc8a.so
+# libtool-ltdl
+#    /usr/lib/.build-id
+#    /usr/lib/.build-id/05
+#    /usr/lib/.build-id/05/1b86d10ca6eea515afcf155f8b0cc85c134a76
+#    /usr/lib/libltdl.so.7
+#    /usr/lib/libltdl.so.7.3.1
+#    /usr/share/licenses/libtool-ltdl
+#    /usr/share/licenses/libtool-ltdl/COPYING.LIB
+#    /usr/lib/.build-id
+#    /usr/lib/.build-id/a8
+#    /usr/lib/.build-id/a8/d94070c86b04025d16e22a2b3e3888bca160a2
+#    /usr/lib64/libltdl.so.7
+#    /usr/lib64/libltdl.so.7.3.1
+#    /usr/share/licenses/libtool-ltdl
+#    /usr/share/licenses/libtool-ltdl/COPYING.LIB
+
+
+#    && sudo ./install postgres -a \
+#    && sudo ./install snowflake -a
+
+  CMD [ "/home/qlik/repagent-start.sh" ]

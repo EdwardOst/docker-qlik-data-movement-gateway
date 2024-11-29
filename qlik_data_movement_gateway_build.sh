@@ -37,6 +37,10 @@ function qlik_data_movement_gateway_build() {
     --build-arg qlik_user="${qlik_data_movement_gateway_user}" \
     --build-arg password="${qlik_data_movement_gateway_password}" \
     --build-arg dnf_command="${qlik_data_movement_gateway_dnf_command}" \
+    --build-arg mysql_odbc_url="${qlik_data_movement_gateway_mysql_odbc_url}" \
+    --build-arg mysql_jdbc_url="${qlik_data_movement_gateway_mysql_jdbc_url}" \
+    --build-arg snowflake_odbc_url="${qlik_data_movement_gateway_snowflake_odbc_url}" \
+    --build-arg snowflake_jdbc_url="${qlik_data_movement_gateway_snowflake_jdbc_url}" \
     --build-arg qlik_tenant="${qlik_data_movement_gateway_tenant}" -f "${qlik_data_movement_gateway_dockerfile}" .
 
   declare -r build_status=$?
